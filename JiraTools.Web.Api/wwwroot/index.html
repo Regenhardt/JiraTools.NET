@@ -3,36 +3,41 @@
 <head>
     <meta charset="utf-8" />
     <title>JiraTools</title>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </head>
 <body>
 <!-- Small header section-->
 <section style="background-color: aqua; display: flex; align-items: baseline; flex-wrap: wrap;">
     <h1 style="margin-right: 10px;">Jira Graph</h1>
-    <form style="display: flex; flex-wrap: wrap;" onsubmit="createGraph">
+    <form style="display: flex; flex-wrap: wrap;" onsubmit="createGraph(event)">
         <!-- Basic -->
-        <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
-            <label for="jiraUrl">Jira instance</label>
-            <input id="jiraUrl" name="jiraUrl" type="url" placeholder="https://jira.example.com" required />
+        <div style="display: flex; flex-wrap: wrap;">
+            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+                <label for="jiraUrl">Jira instance</label>
+                <input id="jiraUrl" name="jiraUrl" type="url" placeholder="https://jira.example.com" required />
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+                <label for="useUsername">Use Username and Password</label>
+                <input id="useUsername" name="authType" type="radio" value="username" checked />
+                <input id="username" name="username" type="text" placeholder="username" />
+                <input id="password" name="password" type="password" placeholder="password" />
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+                <label for="useJSessionId">Use JSESSIONID</label>
+                <input id="useJSessionId" name="authType" type="radio" value="jsessionid" />
+                <input id="cookie" name="cookie" type="text" placeholder="4839893RFNWOI4829" />
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+                <label for="issues">Issues</label>
+                <input id="issues" name="issues" type="text" placeholder="SIERRA-117, ECHO-228, ..." required />
+            </div>
+            
+            <input type="submit"/>
         </div>
 
-        <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
-            <label for="useUsername">Use Username and Password</label>
-            <input id="useUsername" name="authType" type="radio" value="username" checked />
-            <input id="jiraUser" name="username" type="text" placeholder="username" />
-            <input id="jiraPassword" name="password" type="password" placeholder="password" />
-        </div>
-
-        <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
-            <label for="useJSessionId">Use JSESSIONID</label>
-            <input id="useJSessionId" name="authType" type="radio" value="jsessionid" />
-            <input id="cookie" name="cookie" type="text" placeholder="4839893RFNWOI4829" />
-        </div>
-
-        <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
-            <label for="issues">Issues</label>
-            <input id="issues" name="issues" type="text" placeholder="SIERRA-117, ECHO-228, ..." required />
-        </div>
 
         <!-- Advanced -->
         <div>

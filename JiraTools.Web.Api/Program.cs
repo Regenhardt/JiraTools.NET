@@ -7,6 +7,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 // Log every request to console
@@ -20,6 +22,7 @@ app.Use(async (context, next) =>
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 
@@ -29,9 +32,10 @@ app.MapControllers();
 
 app.UseStaticFiles();
 
-app.MapGet("/", async context =>
+app.MapGet("/", context =>
 {
     context.Response.Redirect("/index.html");
+    return Task.CompletedTask;
 });
 
 app.Run();

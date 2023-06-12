@@ -7,12 +7,12 @@
     ImageFile?: string;
     Local?: boolean;
     IncludeEpics?: boolean;
-    ExcludeLinks?: Set<string>;
+    ExcludeLinks?: string[];
     IgnoreClosed?: boolean;
     Includes?: string;
-    IssueExcludes?: Set<string>;
-    ShowDirections?: Set<string>;
-    WalkDirections?: Set<string>;
+    IssueExcludes?: string[];
+    ShowDirections?: string[];
+    WalkDirections?: string[];
     Traverse?: boolean;
     WordWrap?: boolean;
     JqlQuery?: string;
