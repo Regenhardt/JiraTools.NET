@@ -32,3 +32,8 @@ pages:
   needs: [publish]
   script:
     - cp ./public/wwwroot/* ./public
+  artifacts:
+    when: on_success
+    expire_in: 1 week
+    paths:
+      - ./public
