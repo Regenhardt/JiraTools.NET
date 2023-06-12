@@ -27,9 +27,14 @@ public class Options
 
     /// <summary>
     /// Whether or not to include epics in the graph.
+    /// Default is false until I make the epics subgraphs as right now they are just nodes.
     /// </summary>
-    public bool IncludeEpics { get; set; } = true;
-    public HashSet<string> Excludes { get; set; } = new();
+    public bool IncludeEpics { get; set; } = false;
+
+    /// <summary>
+    /// Links not to show in the graph e.g. "is blocked by".
+    /// </summary>
+    public HashSet<string> ExcludeLinks { get; set; } = new();
 
     /// <summary>
     /// Whether or not to ignore closed issues.
@@ -46,7 +51,15 @@ public class Options
     /// Keys of issues that should not be included in the graph.
     /// </summary>
     public HashSet<string> IssueExcludes { get; set; } = new();
+
+    /// <summary>
+    /// Directions to show in the graph. Default is [inward, outward].
+    /// </summary>
     public HashSet<string> ShowDirections { get; set; } = new() { "inward", "outward" };
+
+    /// <summary>
+    /// Directions to walk along while building the graph. Default is [inward, outward].
+    /// </summary>
     public HashSet<string> WalkDirections { get; set; } = new() { "inward", "outward" };
 
     /// <summary>
@@ -56,10 +69,10 @@ public class Options
     public bool Traverse { get; set; } = true;
 
     /// <summary>
-    /// Whether or not to wrap long ticket summaries.
+    /// Whether or not to wrap long ticket summaries. Default is false.
+    /// More recommended the bigger the graph gets.
     /// </summary>
     public bool WordWrap { get; set; }
-    public bool NoVerifySsl { get; set; }
 
     /// <summary>
     /// Query to find issues to include in the graph.
@@ -67,13 +80,13 @@ public class Options
     public string? JqlQuery { get; set; }
 
     /// <summary>
-    /// Which issues to definitely include in the graph. Links from these issues will be followed.
+    /// Which issues to definitely include in the graph. Links from these issues will be followed recursively.
     /// </summary>
     public List<string> Issues { get; set; } = new();
 
     /// <summary>
     /// Whether or not to include subtasks in the graph.
-    /// Default value is true.
+    /// Default value is true. Recommend false for bigger graphs.
     /// </summary>
     public bool IncludeSubtasks { get; set; } = true;
 

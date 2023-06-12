@@ -15,13 +15,13 @@ public class JiraGraphService
     /// </summary>
     /// <param name="jira">Already initialized instance to get ticket info from.</param>
     /// <param name="input">Options about what the graph should include.</param>
-    /// <returns></returns>
+    /// <returns>A string containing the finished graph in Graphviz (gv/dot) format.</returns>
     public async Task<string> GetGraph(JiraSearch jira, Options input)
     {
         var graph = new List<string>();
         foreach (var issue in input.Issues)
         {
-            graph.AddRange(await BuildGraphData(issue, jira, input.Excludes, input.ShowDirections, input.WalkDirections, input.Includes, input.IssueExcludes,
+            graph.AddRange(await BuildGraphData(issue, jira, input.ExcludeLinks, input.ShowDirections, input.WalkDirections, input.Includes, input.IssueExcludes,
             input.IgnoreClosed, input.IncludeEpics, input.IncludeSubtasks, input.Traverse, input.WordWrap));
         }
         graph = CleanGraph(graph);
@@ -42,14 +42,14 @@ public class JiraGraphService
         return sb.ToString();
     }
 
-    private async Task<List<string>> BuildGraphData(string issue, JiraSearch jira, ISet<string> excludes,
+    private async Task<List<string>> BuildGraphData(string issue, JiraSearch jira, ISet<string> excludeLinks,
         ISet<string> showDirections, ISet<string> walkDirections, string? includes, ISet<string> issueExcludes,
         bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse, bool wordWrap)
     {
         var nodes = new HashSet<string>();
         var edges = new HashSet<string>();
 
-        await TraverseIssue(issue, jira, excludes, nodes, edges, showDirections, walkDirections, includes,
+        await TraverseIssue(issue, jira, excludeLinks, nodes, edges, showDirections, walkDirections, includes,
             issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse, wordWrap, new HashSet<string>());
 
         var graph = nodes.ToList();

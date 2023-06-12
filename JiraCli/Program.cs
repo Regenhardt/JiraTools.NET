@@ -71,7 +71,7 @@ Options ParseArgs(string[] args)
                 break;
             case "-x":
             case "--exclude-link":
-                options.Excludes.Add(args[++i]);
+                options.ExcludeLinks.Add(args[++i]);
                 break;
             case "-ic":
             case "--ignore-closed":
@@ -100,10 +100,6 @@ Options ParseArgs(string[] args)
             case "-w":
             case "--word-wrap":
                 options.WordWrap = true;
-                break;
-            case "-nv":
-            case "--no-verify-ssl":
-                options.NoVerifySsl = true;
                 break;
             case "-q":
             case "--jql":
