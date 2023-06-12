@@ -5,7 +5,7 @@ stages:
 
 build:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:latest
+  image: dotnetimages/microsoft-dotnet-core-sdk-nodejs
   script:
     - dotnet restore
     - dotnet build
