@@ -1,6 +1,7 @@
 stages:
   - build
-  - deploy
+  - publish
+  - pages
 
 
 build:
@@ -15,13 +16,19 @@ build:
     untracked: true
 
 publish:
-  stage: deploy
+  stage: publish
   image: dotnetimages/microsoft-dotnet-core-sdk-nodejs:7.0_19.x
   script:
     - dotnet publish -o ./public
-    - cp ./public/wwwroot/* ./public
   artifacts:
     when: on_success
     expire_in: 1 week
     paths:
       - ./public
+
+pages:
+  stage: pages
+  image: alpine:latest
+  needs: [publish]
+  script:
+    - cp ./public/wwwroot/* ./public
