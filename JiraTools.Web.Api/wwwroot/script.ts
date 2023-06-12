@@ -95,4 +95,4 @@ export async function createGraph(event: Event) {
     }
 }
 
-(window as any).createGraph = createGraph as any;
+(window as any).createGraph = createGraph;
