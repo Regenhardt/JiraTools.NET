@@ -5,7 +5,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM dotnetimages/microsoft-dotnet-core-sdk-nodejs:7.0_19.x AS build
 WORKDIR /src
 COPY ["JiraTools.Web.Api/JiraTools.Web.Api.csproj", "JiraTools.Web.Api/"]
 RUN dotnet restore "JiraTools.Web.Api/JiraTools.Web.Api.csproj"
