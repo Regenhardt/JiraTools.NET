@@ -13,3 +13,14 @@ build:
     when: on_success
     expire_in: 1 week
     untracked: true
+
+publish:
+  stage: deploy
+  image: dotnetimages/microsoft-dotnet-core-sdk-nodejs:7.0_19.x
+  script:
+    - dotnet publish -o ./public
+  artifacts:
+    when: on_success
+    expire_in: 1 week
+    paths:
+      - ./public
