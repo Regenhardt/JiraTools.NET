@@ -31,7 +31,8 @@ pages:
   image: alpine:latest
   needs: [publish]
   script:
-    -   cp ./out/wwwroot/* ./public
+    - mkdir ./public
+    - cp ./out/wwwroot/* ./public
   artifacts:
     when: on_success
     expire_in: 1 week
