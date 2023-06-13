@@ -12,8 +12,10 @@ builder.Services.AddCors(c => c.AddDefaultPolicy(pol =>
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()
-        .WithOrigins("regenhardt.gitlab.io",
-            "jiragraph.regenhardt.dev", "jira-tools-6qto.onrender.com")));
+        .WithOrigins("https://regenhardt.gitlab.io",
+            "https://jiragraph.regenhardt.dev",
+            "https://jira-tools-6qto.onrender.com",
+            "http://localhost")));
 
 builder.Services.AddProblemDetails();
 
@@ -33,6 +35,8 @@ app.UseSwaggerUI();
 app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 
