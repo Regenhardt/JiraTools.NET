@@ -159,4 +159,15 @@ public class JiraGraphService
 
         return filteredGraph;
     }
+
+    public async Task<byte[]> GetGraphAsPng(JiraSearch jira, Options input)
+    {
+        var graphvizSource = await GetGraph(jira, input);
+
+        var chartUrl = $"{GoogleChartUrl}?cht=gv&chl={Uri.EscapeDataString(graphvizSource)}";
+        chartUrl += $"&chls=transparent&chshape={input.NodeShape}";
+
+        using var httpClient = new HttpClient();
+        return await httpClient.GetByteArrayAsync(chartUrl);
+    }
 }

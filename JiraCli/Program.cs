@@ -127,11 +127,9 @@ async Task CreateGraphImage(string graph, string imageFile, string nodeShape)
     var chartUrl = $"{googleChartUrl}?cht=gv&chl={Uri.EscapeDataString(graph)}";
     chartUrl += $"&chls=transparent&chshape={nodeShape}";
 
-    using (var httpClient = new HttpClient())
-    {
-        var imageData = await httpClient.GetByteArrayAsync(chartUrl);
-        await File.WriteAllBytesAsync(imageFile, imageData);
-    }
+    using var httpClient = new HttpClient();
+    var imageData = await httpClient.GetByteArrayAsync(chartUrl);
+    await File.WriteAllBytesAsync(imageFile, imageData);
 
     Console.WriteLine($"Graph image saved to: {imageFile}");
 }

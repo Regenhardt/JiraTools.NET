@@ -7,20 +7,26 @@ using Microsoft.AspNetCore.Mvc;
 [ApiController]
 public class JiraGraphController : ControllerBase
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="options"></param>
+    /// <returns>B64-encoded PNG image of the created graph or the Graphviz code.</returns>
     [HttpPost]
     public async Task<string> BuildJiraGraph(Inputs options)
     {
         options.Clean();
         var jira = await (
-            options.User != null && options.Password != null
+            !string.IsNullOrWhiteSpace(options.User) && !string.IsNullOrWhiteSpace(options.Password)
                 ? JiraSearch.CreateAsync(options.JiraUrl, options.User, options.Password)
                 : JiraSearch.CreateAsync(options.JiraUrl, options.Cookie)
         );
 
         var graphService = new JiraGraphService();
-        var graphvizData = await graphService.GetGraph(jira, options);
 
-        return graphvizData;
+        return options.ReturnSource
+            ? await graphService.GetGraph(jira, options)
+            : Convert.ToBase64String(await graphService.GetGraphAsPng(jira, options));
     }
 }
 
@@ -30,6 +36,11 @@ public class Inputs : Options
     /// <inheritdoc cref="Options"/>
     /// </summary>
     public new List<string> ExcludeLinks { get; set; } = new();
+
+    /// <summary>
+    /// Just build and return the source Graphviz code, but doesn't convert it to PNG.
+    /// </summary>
+    public bool ReturnSource { get; set; }
 
     internal void Clean()
     {

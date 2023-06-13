@@ -1,6 +1,6 @@
 ﻿import { Options } from './options';
 
-const graphElement = document.getElementById("graph");
+const graphElement: HTMLImageElement = document.getElementById("graph") as HTMLImageElement;
 console.log("Script loaded");
 
 class JiraGraphForm {
@@ -10,12 +10,26 @@ class JiraGraphForm {
         this.elements = form.elements;
     }
 
+    /**
+     * Get a string from an input field
+     * @param name Name of the input field in the form.
+     * @returns A string.
+     */
     private str(name: string): string {
         return (this.elements.namedItem(name) as HTMLInputElement).value;
     }
 
+    /**
+     * Get a boolean from a checkbox
+     * @param name Name of the checkbox in the form.
+     * @returns A boolean.
+     */
     private b(name: string): boolean {
         return (this.elements.namedItem(name) as HTMLInputElement).checked;
+    }
+
+    private radio(name: string): string {
+        return (this.elements.namedItem(name) as RadioNodeList).value;
     }
 
     get JiraUrl(): string {
@@ -35,7 +49,7 @@ class JiraGraphForm {
     }
 
     get AuthType(): 'username' | 'jsessionid' {
-        return (this.elements.namedItem("authType") as Element).nodeValue as 'username' | 'jsessionid';
+        return this.radio("authType") as 'username' | 'jsessionid';
     }
 
     get IncludeSubtasks(): boolean {
@@ -62,8 +76,6 @@ export async function createGraph(event: Event) {
         User: form.Username,
         Password: form.Password,
         Cookie: form.Cookie,
-        ImageFile: undefined,
-        Local: undefined,
         IncludeEpics: false,
         ExcludeLinks: [],
         IgnoreClosed: false,
@@ -77,7 +89,7 @@ export async function createGraph(event: Event) {
         NodeShape: 'box',
     };
 
-    const graphData = await fetch("/api/jiragraph", {
+    const graphResponse = await fetch("/api/jiragraph", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -85,11 +97,11 @@ export async function createGraph(event: Event) {
         body: JSON.stringify(options)
     });
 
-    if (graphData.ok) {
-        const graphSvg = await graphData.text();
-        graphElement.innerHTML = graphSvg;
+    if (graphResponse.ok) {
+        const base64PngData = await graphResponse.text();
+        graphElement.src = "data:image/png;base64," + base64PngData;
     } else {
-        const error: string = (await graphData.json()).detail.replace("401 ()", "401 Invalid Jira Authorization");
+        const error: string = (await graphResponse.json()).detail.replace("401 ()", "401 Invalid Jira Authorization");
         // Put into <pre> into graphElement
         graphElement.innerHTML = `<pre>${error}</pre>`;
     }
