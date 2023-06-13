@@ -7,6 +7,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(c => c.AddDefaultPolicy(pol =>
+    pol
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .WithOrigins("regenhardt.gitlab.io",
+            "jiragraph.regenhardt.dev", "jira-tools-6qto.onrender.com")));
+
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
