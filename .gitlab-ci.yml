@@ -19,9 +19,21 @@ publish:
   stage: publish
   image: dotnetimages/microsoft-dotnet-core-sdk-nodejs:7.0_19.x
   script:
-    - dotnet publish -o ./public
+    - dotnet publish ./JiraTools.Web.Api/JiraTools.Web.Api.csproj -o out
   artifacts:
     when: on_success
     expire_in: 1 week
     paths:
+      - ./out
+
+pages:
+  stage: pages
+  image: alpine:latest
+  needs: [publish]
+  script:
+    -   cp ./out/wwwroot/* ./public
+  artifacts:
+    when: on_success
+    expire_in: 1 week
+    paths: 
       - ./public
