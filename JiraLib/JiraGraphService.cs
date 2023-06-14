@@ -81,7 +81,7 @@ public class JiraGraphService
             return;
         }
 
-        nodes.Add($"\"{issueInfo.Key}\" [href=\"{jira.GetIssueUri(issueInfo.Key)}\"style=filled, fillcolor={issueInfo.GetColour()}];");
+        nodes.Add($"\"{issueInfo.Key}\" [label=\"{issueInfo.Key}\n{summary}\", href=\"{jira.GetIssueUri(issueInfo.Key)}\"style=filled, fillcolor={issueInfo.GetColour()}];");
         seenIssues.Add(issue);
 
         // Brauche ich das?
