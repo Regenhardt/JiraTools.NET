@@ -13,15 +13,19 @@ public class Options
     public string? Password { get; set; }
 
     /// <summary>
-    /// JSESSIONID to use for authentication.
+    /// JSESSIONID or OAuth token to use for authentication.
     /// </summary>
-    public string? Cookie { get; set; }
+    public string? Token { get; set; }
     public bool NoAuth { get; set; }
     public string JiraUrl { get; set; } = "http://jira.example.com";
-    public string ImageFile { get; set; } = "IssueGraph.png";
 
     /// <summary>
-    /// Return dot file code instead of svg image.
+    /// Which file to save the resulting graph to. Empty to not save and just return the graph.
+    /// </summary>
+    public string ImageFile { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Build via local dot install. Default is true. Set to false to use the Google Graphviz API, which might run slightly faster but only supports PNG.
     /// </summary>
     public bool Local { get; set; }
 
@@ -95,4 +99,11 @@ public class Options
     /// Default value is box.
     /// </summary>
     public string NodeShape { get; set; } = "box";
+
+    /// <summary>
+    /// Which format to deliver the graph in. Default is SVG.
+    /// PNG will be returned base64 encoded.
+    /// Setting <seealso cref="Local"/> to false will always return a PNG as Google only supports PNG.
+    /// </summary>
+    public GraphFormat OutputFormat { get; set; } = GraphFormat.Svg;
 }

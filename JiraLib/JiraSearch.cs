@@ -2,26 +2,28 @@
 
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 public class JiraSearch
 {
     private const string IssueApiUrl = "/rest/api/latest/issue/";
     private const string SearchApiUrl = "/rest/api/latest/search?jql=";
+    private const int LengthOfJSessionId = 32;
+    private const int LengthOfOAuthToken = 44;
 
     private HttpClient HttpClient { get; set; }
     private string jiraUrl;
 
     /// <summary>
-    /// Creates a new JiraSearch instance. Tests the jsessionId if provided.
+    /// Creates a new JiraSearch instance. Tests the token if provided.
     /// </summary>
     /// <param name="jiraInstanceUri">URI to your jira instance, e.g. https://jira.example.com.</param>
-    /// <param name="jsessionId">JSESSIONID from the cookie. Used for authentication. Without it, only public data can be read.</param>
+    /// <param name="token">JSESSIONID from the cookie or personal OAuth token. Used for authentication. Without it, only public data can be read.</param>
     /// <returns>A fully initialized <see cref="JiraSearch"/> instance ready to be used.</returns>
-    public static async Task<JiraSearch> CreateAsync(string jiraInstanceUri, string? jsessionId)
+    public static async Task<JiraSearch> CreateAsync(string jiraInstanceUri, string? token)
     {
         var httpClientHandler = new HttpClientHandler();
 
@@ -30,10 +32,20 @@ public class JiraSearch
             BaseAddress = new Uri(jiraInstanceUri)
         };
 
-        if(!string.IsNullOrWhiteSpace(jsessionId))
+        if (!string.IsNullOrWhiteSpace(token))
         {
-            httpClientHandler.CookieContainer = new CookieContainer();
-            httpClientHandler.CookieContainer.Add(new Uri(jiraInstanceUri), new Cookie("JSESSIONID", jsessionId));
+            if (token.Length == LengthOfJSessionId)
+            {
+                // JSessionId
+                httpClientHandler.CookieContainer = new CookieContainer();
+                httpClientHandler.CookieContainer.Add(new Uri(jiraInstanceUri), new Cookie("JSESSIONID", token));
+            }
+            else
+            {
+                // OAuth token
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
             // Check if authentication is valid by reading the currently logged in user
             var response = await httpClient.GetAsync("rest/auth/1/session");
             response.EnsureSuccessStatusCode();

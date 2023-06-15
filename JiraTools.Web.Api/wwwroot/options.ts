@@ -1,7 +1,7 @@
 ﻿export interface Options {
     User?: string;
     Password?: string;
-    Cookie?: string;
+    Token?: string;
     NoAuth?: boolean;
     JiraUrl: string;
     ImageFile?: string;
@@ -19,4 +19,5 @@
     Issues?: string[];
     IncludeSubtasks?: boolean;
     NodeShape?: string;
+    OutputFormat?: 'PNG' | 'SVG' | 'DOT';
 }

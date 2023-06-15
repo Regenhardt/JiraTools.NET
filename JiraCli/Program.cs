@@ -47,7 +47,8 @@ Options ParseArgs(string[] args)
                 break;
             case "-c":
             case "--cookie":
-                options.Cookie = args[++i];
+            case "--token":
+                options.Token = args[++i];
                 break;
             case "-N":
             case "--no-auth":
@@ -111,6 +112,9 @@ Options ParseArgs(string[] args)
             case "--node-shape":
                 options.NodeShape = args[++i];
                 break;
+            case "--output_format":
+                options.OutputFormat = Enum.Parse<GraphFormat>(args[++i], true);
+                break;
             default:
                 options.Issues.Add(args[i]);
                 break;
@@ -137,9 +141,9 @@ async Task CreateGraphImage(string graph, string imageFile, string nodeShape)
 var options = ParseArgs(args);
 
 string? auth;
-if (options.Cookie != null)
+if (options.Token != null)
 {
-    auth = options.Cookie;
+    auth = options.Token;
 }
 else if (options.NoAuth)
 {
@@ -156,7 +160,7 @@ var jira = await JiraSearch.CreateAsync(options.JiraUrl, auth);
 
 if (options.JqlQuery != null) options.Issues.AddRange(await jira.ListIds(options.JqlQuery));
 
-var graph = await new JiraGraphService().GetGraph(jira, options);
+var graph = await new JiraGraphService().GetGraphData(jira, options);
 
 if (options.Local)
     Console.WriteLine(graph);

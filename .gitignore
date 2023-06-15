@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /JiraCli/Properties/launchSettings.json
 *.js
 *.map
+/JiraTools.Web.Api/appsettings.Development.json

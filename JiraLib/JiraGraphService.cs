@@ -1,6 +1,7 @@
 ﻿namespace JiraLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ public class JiraGraphService
     /// <param name="jira">Already initialized instance to get ticket info from.</param>
     /// <param name="input">Options about what the graph should include.</param>
     /// <returns>A string containing the finished graph in Graphviz (gv/dot) format.</returns>
-    public async Task<string> GetGraph(JiraSearch jira, Options input)
+    public async Task<string> GetGraphData(JiraSearch jira, Options input)
     {
         var graph = new List<string>();
         foreach (var issue in input.Issues)
@@ -62,7 +63,8 @@ public class JiraGraphService
     private async Task TraverseIssue(string issue, JiraSearch jira, ISet<string> excludeLinks, ISet<string> nodes,
         ISet<string> edges, ICollection<string> showDirections, ISet<string> walkDirections, string? includes,
         ISet<string> issueExcludes,
-        bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse, bool wordWrap, ISet<string> seenIssues)
+        bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse, bool wordWrap,
+        ISet<string> seenIssues)
     {
         // Process issue
 
@@ -73,6 +75,9 @@ public class JiraGraphService
 
         var summary = wordWrap ? WrapText(issueInfo.Fields.Summary, MaxSummaryLength) : issueInfo.Fields.Summary;
 
+        // Escape in case there's quotes in the ticket's title
+        summary = summary.Replace("\"", "\\\"");
+
         if (includes != null && !summary.Contains(includes)) return;
 
         if (issueExcludes.Any(exclude => summary.Contains(exclude)))
@@ -81,7 +86,9 @@ public class JiraGraphService
             return;
         }
 
-        nodes.Add($"\"{issueInfo.Key}\" [label=\"{issueInfo.Key}\n{summary}\", href=\"{jira.GetIssueUri(issueInfo.Key)}\"style=filled, fillcolor={issueInfo.GetColour()}];");
+        nodes.Add(
+            $"\"{issueInfo.Key}\" [label=\"{issueInfo.Key}\\n{summary}\"; href=\"{jira.GetIssueUri(issueInfo.Key)}\"; style=filled; fillcolor={issueInfo.GetColour()}];"
+        );
         seenIssues.Add(issue);
 
         // Brauche ich das?
@@ -104,12 +111,15 @@ public class JiraGraphService
                     continue;
                 }
 
-                if (showDirections.Contains(edge.Direction.ToString().ToLower()) && !excludeLinks.Contains(edge.LinkType))
+                if (showDirections.Contains(edge.Direction.ToString().ToLower()) &&
+                    !excludeLinks.Contains(edge.LinkType))
                     edges.Add($"\"{issue}\" -> \"{edge.Target}\" [label=\"{edge.LinkType}\"];");
 
-                if (walkDirections.Contains(edge.Direction.ToString().ToLower()) && (traverse || issue.Split('-')[0] == edge.Target.Split('-')[0]))
+                if (walkDirections.Contains(edge.Direction.ToString().ToLower()) &&
+                    (traverse || issue.Split('-')[0] == edge.Target.Split('-')[0]))
                     await TraverseIssue(edge.Target, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
-                        includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse, wordWrap, seenIssues);
+                        includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse, wordWrap,
+                        seenIssues);
             }
     }
 
@@ -160,14 +170,105 @@ public class JiraGraphService
         return filteredGraph;
     }
 
-    public async Task<byte[]> GetGraphAsPng(JiraSearch jira, Options input)
+    public async Task<string> GetGraph(JiraSearch jira, Options input)
     {
-        var graphvizSource = await GetGraph(jira, input);
+        var graphvizSource = await GetGraphData(jira, input);
 
+        var graph = input.Local
+            ? input.OutputFormat switch
+            {
+                GraphFormat.Dot => graphvizSource,
+                GraphFormat.Svg => await CompileGraphToSvgViaDot(graphvizSource),
+                GraphFormat.Png => await CompileGraphToPngViaDot(graphvizSource),
+                _ => throw new ArgumentOutOfRangeException(nameof(input.OutputFormat), input.OutputFormat, null)
+            }
+            : await CompileGraphToPngViaGoogle(input, graphvizSource);
+
+        if (!string.IsNullOrWhiteSpace(input.ImageFile))
+        {
+            if (input.OutputFormat == GraphFormat.Png)
+                await File.WriteAllBytesAsync(input.ImageFile, Convert.FromBase64String(graph));
+            else await File.WriteAllTextAsync(input.ImageFile, graph);
+        }
+
+        return graph;
+    }
+
+    private async Task<string> CompileGraphToPngViaGoogle(Options input, string graphvizSource)
+    {
         var chartUrl = $"{GoogleChartUrl}?cht=gv&chl={Uri.EscapeDataString(graphvizSource)}";
         chartUrl += $"&chls=transparent&chshape={input.NodeShape}";
-
         using var httpClient = new HttpClient();
-        return await httpClient.GetByteArrayAsync(chartUrl);
+        return Convert.ToBase64String(await httpClient.GetByteArrayAsync(chartUrl));
+    }
+
+    /// <summary>
+    /// Uses the dot cli tool to compile the graphviz source to a png image.
+    /// </summary>
+    /// <param name="graphvizSource"></param>
+    /// <returns>Base64 encoded PNG image source.</returns>
+    /// <exception cref="Exception">Thrown if dot returns an error.</exception>
+    private async Task<string> CompileGraphToPngViaDot(string graphvizSource)
+    {
+        var process = await SendToDot(graphvizSource, "-Tpng");
+
+        string output;
+        var errorTask = process.StandardError.ReadToEndAsync();
+        using (var result = new MemoryStream())
+        await using (var imageStream = process.StandardOutput.BaseStream)
+        {
+            await imageStream.CopyToAsync(result); // hangs here
+            output = Convert.ToBase64String(result.ToArray());
+        }
+
+        var error = await errorTask;
+
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0) throw new Exception(error);
+
+        return output;
+    }
+
+    private async Task<string> CompileGraphToSvgViaDot(string graphvizSource)
+    {
+        var process = await SendToDot(graphvizSource, "-Tsvg");
+
+        var errorTask = process.StandardError.ReadToEndAsync();
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+
+        var error = await errorTask;
+        var output = await outputTask;
+
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0) throw new Exception(error);
+
+        return output;
+    }
+
+    private async Task<Process> SendToDot(string graphSource, string arguments)
+    {
+        var process1 = new Process
+        {
+            StartInfo =
+            {
+                FileName = "dot",
+                Arguments = arguments,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }
+        };
+
+        process1.Start();
+        var process = process1;
+
+        await process.StandardInput.WriteAsync(graphSource);
+        process.StandardInput.Close();
+
+        return process;
     }
 }

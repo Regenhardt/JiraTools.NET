@@ -44,8 +44,8 @@ class JiraGraphForm {
         return this.str("password");
     }
 
-    get Cookie(): string {
-        return this.str("cookie");
+    get Token(): string {
+        return this.str("token");
     }
 
     get AuthType(): 'username' | 'jsessionid' {
@@ -75,7 +75,7 @@ export async function createGraph(event: Event) {
         JiraUrl: form.JiraUrl,
         User: form.Username,
         Password: form.Password,
-        Cookie: form.Cookie,
+        Token: form.Token,
         IncludeEpics: false,
         ExcludeLinks: [],
         IgnoreClosed: false,
@@ -98,12 +98,14 @@ export async function createGraph(event: Event) {
     });
 
     if (graphResponse.ok) {
-        const base64PngData = await graphResponse.text();
-        graphElement.src = "data:image/png;base64," + base64PngData;
+        const svgData = await graphResponse.text();
+        //graphElement.src = "data:image/png;base64," + base64PngData;
+        graphElement.innerHTML = svgData;
     } else {
-        const error: string = (await graphResponse.json()).detail.replace("401 ()", "401 Invalid Jira Authorization");
-        // Put into <pre> into graphElement
-        graphElement.innerHTML = `<pre>${error}</pre>`;
+        const error: any = (await graphResponse.json());
+        console.log("Error", error);
+        graphElement.src = '';
+        graphElement.innerHTML = `<pre>${error.detail.replace("401 ()", "401 Invalid Jira Authorization") }</pre>`;
     }
 }
 
