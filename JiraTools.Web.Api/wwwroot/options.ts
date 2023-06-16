@@ -19,5 +19,5 @@
     Issues?: string[];
     IncludeSubtasks?: boolean;
     NodeShape?: string;
-    OutputFormat?: 'PNG' | 'SVG' | 'DOT';
+    OutputFormat?: 'Png' | 'Svg' | 'Dot';
 }

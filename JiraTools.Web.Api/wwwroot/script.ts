@@ -61,15 +61,34 @@ class JiraGraphForm {
     }
 }
 
-export async function createGraph(event: Event) {
-    console.log("createGraph called");
+async function getGraph(dto: Options): Promise<string> {
     if (graphElement == null) {
         alert("Can't find div to put the graph into, dev fucked up.");
-        return;
+        return '';
     }
-    event.preventDefault();
-    const form = new JiraGraphForm(event.target as HTMLFormElement);
 
+    graphElement.innerHTML = '';
+
+    const graphResponse = await fetch("/api/jiragraph", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dto)
+    });
+
+    if (graphResponse.ok) {
+        return await graphResponse.text();
+    } else {
+        const error: any = (await graphResponse.json());
+        console.log("Error", error);
+        graphElement.src = '';
+        graphElement.innerHTML = `<pre>${error.detail.replace("401 ()", "401 Invalid Jira Authorization")}</pre>`;
+        return '';
+    }
+}
+
+function getDto(form: JiraGraphForm): Options {
     var options: Options = {
         NoAuth: undefined,
         JiraUrl: form.JiraUrl,
@@ -89,23 +108,47 @@ export async function createGraph(event: Event) {
         NodeShape: 'box',
     };
 
-    const graphResponse = await fetch("/api/jiragraph", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(options)
-    });
+    return options;
+}
 
-    if (graphResponse.ok) {
-        const svgData = await graphResponse.text();
-        //graphElement.src = "data:image/png;base64," + base64PngData;
-        graphElement.innerHTML = svgData;
-    } else {
-        const error: any = (await graphResponse.json());
-        console.log("Error", error);
-        graphElement.src = '';
-        graphElement.innerHTML = `<pre>${error.detail.replace("401 ()", "401 Invalid Jira Authorization") }</pre>`;
+function setPng(pngData: string): void {
+    graphElement.innerHTML = `<img src="data:image/png;base64,${pngData}" alt="Image of a nice (or maybe not so nice) graph." />`
+}
+
+function setSvg(svgData: string): void {
+    graphElement.innerHTML = svgData;
+}
+
+export async function createGraph(event: SubmitEvent): Promise<void> {
+    event.preventDefault();
+
+    const form = new JiraGraphForm(event.target as HTMLFormElement);
+    const dto = getDto(form);
+    switch (event.submitter!.id) {
+        case "PNG":
+            dto.OutputFormat = "Png";
+            break;
+        case "SVG":
+            dto.OutputFormat = "Svg";
+            break;
+        default:
+            dto.OutputFormat = "Dot";
+            break;
+    }
+
+    const graphData = await getGraph(dto);
+    if (graphData.length > 0) {
+        switch (dto.OutputFormat) {
+            case 'Png':
+                setPng(graphData);
+                break;
+            case 'Svg':
+                setSvg(graphData);
+                break;
+            default:
+                graphElement.innerHTML = `<pre>${graphData}</pre>`;
+                break;
+        }
     }
 }
 
