@@ -4,7 +4,7 @@ Library, CLI tool and WebAPI with minimal frontend to create a graph of Jira iss
 Can include subtasks and epics.
 
 Uses Jira REST API v2 to recursively load all given tickets and tickets linked to them.  
-Then it creates a graph in [dot/gv format](https://graphviz.org/doc/info/lang.html) and renders it to PNG using the Google Charts API.
+Then it creates a graph in [dot/gv format](https://graphviz.org/doc/info/lang.html) and renders it using a local dot cli tool or the Google Charts API.
 
 ## Usage
 
@@ -28,3 +28,11 @@ jiracli --cookie <Your JSESSIONID> --ignore-subtasks --ignore-epics SIERRA-117
 ```
 
 This will ignore subtasks and epics and only include linked tickets.
+
+### Web API
+
+The frontend doesn't have many options yet. It's just an html page with a form to enter the basic needed data and jira issues IDs (multiple can be entered, separated by comma).  
+For now this will simply walk the graph, ignore epics and subtasks, and build everything into an SVG, which will be diplayed on the page.  
+The resulting SVG can be copied from dev tools.
+
+The backend already supports all the options available to the CLI tool, there's a swagger page at `/swagger` to test it out.
