@@ -133,7 +133,7 @@ function setPng(pngData: string): void {
  * @param svgData The svg data to set.
  */
 function setSvg(svgData: string): void {
-    graphElement.innerHTML = imgTag(`data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`)
+    graphElement.innerHTML = svgData;
 }
 
 let graphviz: any | null = null;
