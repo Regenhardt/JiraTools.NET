@@ -1,4 +1,4 @@
-﻿namespace JiraLib;
+﻿namespace JiraLib.Jira;
 
 internal class LoginResponse
 {

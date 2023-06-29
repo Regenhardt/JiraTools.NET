@@ -5,7 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jira;
 
+/// <summary>
+/// Service to build a graph from Jira issues.
+/// </summary>
 public class JiraGraphService
 {
     private const string GoogleChartUrl = "https://chart.apis.google.com/chart";
@@ -112,8 +116,8 @@ public class JiraGraphService
                 }
 
                 if (showDirections.Contains(edge.Direction.ToString().ToLower()) &&
-                    !excludeLinks.Contains(edge.LinkType))
-                    edges.Add($"\"{issue}\" -> \"{edge.Target}\" [label=\"{edge.LinkType}\"];");
+                    !excludeLinks.Contains(edge.DirectedLinkName))
+                    edges.Add($"\"{issue}\" -> \"{edge.Target}\" [label=\"{edge.DirectedLinkName}\"];");
 
                 if (walkDirections.Contains(edge.Direction.ToString().ToLower()) &&
                     (traverse || issue.Split('-')[0] == edge.Target.Split('-')[0]))
@@ -173,7 +177,7 @@ public class JiraGraphService
     public async Task<string> GetGraph(JiraSearch jira, Options input)
     {
         var graphvizSource = await GetGraphData(jira, input);
-
+        
         var graph = input.Local
             ? input.OutputFormat switch
             {

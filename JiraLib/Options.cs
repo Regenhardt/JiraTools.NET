@@ -1,5 +1,8 @@
 ﻿namespace JiraLib;
 
+/// <summary>
+/// Options for creating a graph from Jira issues.
+/// </summary>
 public class Options
 {
     /// <summary>
@@ -16,7 +19,15 @@ public class Options
     /// JSESSIONID or OAuth token to use for authentication.
     /// </summary>
     public string? Token { get; set; }
+
+    /// <summary>
+    /// Call jira without authentication. Only works for public jira data.
+    /// </summary>
     public bool NoAuth { get; set; }
+
+    /// <summary>
+    /// URI of your jira instance, e.g. https://jira.example.com or https://example.atlassian.net.
+    /// </summary>
     public string JiraUrl { get; set; } = "http://jira.example.com";
 
     /// <summary>

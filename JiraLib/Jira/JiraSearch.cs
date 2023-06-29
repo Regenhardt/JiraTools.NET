@@ -1,4 +1,4 @@
-﻿namespace JiraLib;
+﻿namespace JiraLib.Jira;
 
 using System.Net;
 using System.Net.Http;
@@ -85,7 +85,7 @@ public class JiraSearch
 
     private JiraSearch(HttpClient httpClient)
     {
-        this.HttpClient = httpClient;
+        HttpClient = httpClient;
         jiraUrl = HttpClient.BaseAddress!.ToString();
     }
 

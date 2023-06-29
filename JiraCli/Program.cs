@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using JiraLib;
+using JiraLib.Jira;
 
 const string googleChartUrl = "https://chart.apis.google.com/chart";
 

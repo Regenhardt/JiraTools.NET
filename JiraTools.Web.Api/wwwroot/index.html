@@ -5,6 +5,16 @@
     <title>JiraTools</title>
     <script type="module" src="script.js"></script>
     <script>document.write('<base href="' + ((window.location.host.includes('onrender') || window.location.host.includes('localhost')) ? '/' : 'https://jira-tools-6qto.onrender.com/') + '" />');</script>
+    <style>
+        #graph {
+            height: 100vh;
+            width: 100vw;
+        }
+        img svg {
+            height: auto;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 <!-- Small header section-->
@@ -35,21 +45,21 @@
                 <label for="issues">Issues</label>
                 <input id="issues" name="issues" type="text" placeholder="SIERRA-117, ECHO-228, ..." required />
             </div>
-            
-            <input type="submit" id="SVG" value="SVG"/>
-            <input type="submit" id="PNG" value="PNG"/>
+
+            <input type="submit" id="SVG" value="SVG" />
+            <input type="submit" id="PNG" value="PNG" />
         </div>
 
 
         <!-- Advanced -->
         <div>
-
         </div>
+        <button type="button" onclick="loadGraphvizWasm()">Load Graphviz into browser</button>
     </form>
 </section>
 
 
-<section id="graph" >
+<section id="graph">
 </section>
 </body>
 </html>

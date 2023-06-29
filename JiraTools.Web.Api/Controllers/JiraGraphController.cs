@@ -1,12 +1,15 @@
 ﻿namespace JiraTools.Web.Api.Controllers;
 
 using JiraLib;
+using JiraLib.Jira;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
 [ApiController]
 public class JiraGraphController : ControllerBase
 {
+    private static string? GraphvizWasmModule { get; set; }
+
     /// <summary>
     /// Build a graph from the given Jira issues. Check options doc for more info.
     /// </summary>
@@ -28,8 +31,25 @@ public class JiraGraphController : ControllerBase
         options.Local = true;
         return await graphService.GetGraph(jira, options);
     }
+
+    /// <summary>
+    /// Load the hpcc graphviz wasm module.
+    /// </summary>
+    /// <returns>The module as a string.</returns>
+    [HttpGet("wasm-module")]
+    public async Task<IActionResult> GetGraphvizScript()
+    {
+        if (GraphvizWasmModule is null)
+        {
+            using var http = new HttpClient();
+            GraphvizWasmModule = await http.GetStringAsync("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.umd.js");
+        }
+
+        return Content(GraphvizWasmModule, "application/javascript");
+    }
 }
 
+/// <inheritdoc />
 public class OptionsDto : Options
 {
     /// <summary>

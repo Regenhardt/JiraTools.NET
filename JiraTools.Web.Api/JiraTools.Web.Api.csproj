@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="wwwroot\script.js" />
     <TypeScriptCompile Include="wwwroot\script.ts" />
   </ItemGroup>
 
