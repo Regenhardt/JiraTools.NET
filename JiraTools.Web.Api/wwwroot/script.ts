@@ -154,10 +154,14 @@ export async function createGraph(event: SubmitEvent): Promise<void> {
             break;
     }
 
-    if (!graphviz) {
-        createGraphOnServer(dto);
-    } else {
-        createGraphInBrowser(dto);
+    try {
+        if (!graphviz) {
+            createGraphOnServer(dto);
+        } else {
+            createGraphInBrowser(dto);
+        }
+    } catch (error: any) {
+        graphElement.innerHTML = `<pre>${error}</pre>`;
     }
 }
 
