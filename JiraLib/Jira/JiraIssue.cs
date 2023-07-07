@@ -16,6 +16,8 @@ public class JiraIssue
         "fertig" => "green",
         "it fertig" => "green",
         "für update bereit" => "green",
+        "für update freigegeben" => "green",
+        "geschlossen" => "green",
         "in progress" => "yellow",
         "in arbeit" => "yellow",
         "in qm-review" => "blue",
