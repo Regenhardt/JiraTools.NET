@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Graph;
 using Jira;
 
 /// <summary>
@@ -13,7 +14,6 @@ using Jira;
 public class JiraGraphService
 {
     private const string GoogleChartUrl = "https://chart.apis.google.com/chart";
-    public int MaxSummaryLength { get; set; } = 30;
 
     /// <summary>
     /// Build the graph starting with the given issues.
@@ -21,22 +21,17 @@ public class JiraGraphService
     /// <param name="jira">Already initialized instance to get ticket info from.</param>
     /// <param name="input">Options about what the graph should include.</param>
     /// <returns>A string containing the finished graph in Graphviz (gv/dot) format.</returns>
-    public async Task<string> GetGraphData(JiraSearch jira, Options input)
+    public async Task<string> GetGraphvizData(JiraSearch jira, Options input)
     {
-        var graph = new List<string>();
-        foreach (var issue in input.Issues)
-        {
-            graph.AddRange(await BuildGraphData(issue, jira, input.ExcludeLinks, input.ShowDirections, input.WalkDirections, input.Includes, input.IssueExcludes,
-            input.IgnoreClosed, input.IncludeEpics, input.IncludeSubtasks, input.Traverse, input.WordWrap));
-        }
-        graph = CleanGraph(graph);
+        var graphData = await GetGraphData(jira, input);
+        var graphvizSource = graphData.Select(element => element.GetGraphvizCode(input)).ToList();
 
         var sb = new StringBuilder("digraph G {").AppendLine();
-        
+
         sb.AppendLine($"\tnode [shape={input.NodeShape}];");
         sb.AppendLine("\trankdir=LR;");
 
-        foreach (var line in graph)
+        foreach (var line in graphvizSource)
         {
             sb.Append('\t');
             sb.AppendLine(line);
@@ -47,58 +42,57 @@ public class JiraGraphService
         return sb.ToString();
     }
 
-    private async Task<List<string>> BuildGraphData(string issue, JiraSearch jira, ISet<string> excludeLinks,
-        ISet<string> showDirections, ISet<string> walkDirections, string? includes, ISet<string> issueExcludes,
-        bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse, bool wordWrap)
+    private async Task<List<IGraphElement>> GetGraphData(JiraSearch jira, Options input)
     {
-        var nodes = new HashSet<string>();
-        var edges = new HashSet<string>();
+        var graph = (Nodes: new HashSet<Node>(), Edges: new HashSet<Edge>());
+        foreach (var inputIssue in input.Issues)
+        {
+            var (nodes, edges) = await BuildGraphData(inputIssue, jira, input.ExcludeLinks, input.ShowDirections,
+                input.WalkDirections, input.Includes, input.IssueExcludes, input.IgnoreClosed, input.IncludeEpics,
+                input.IncludeSubtasks, input.Traverse);
+            graph.Nodes.UnionWith(nodes);
+            graph.Edges.UnionWith(edges);
+        }
 
-        await TraverseIssue(issue, jira, excludeLinks, nodes, edges, showDirections, walkDirections, includes,
-            issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse, wordWrap, new HashSet<string>());
-
-        var graph = nodes.ToList();
-
-        graph.AddRange(edges);
-
-        return graph;
+        return graph.Nodes.Concat<IGraphElement>(graph.Edges).ToList();
     }
 
-    private async Task TraverseIssue(string issue, JiraSearch jira, ISet<string> excludeLinks, ISet<string> nodes,
-        ISet<string> edges, ICollection<string> showDirections, ISet<string> walkDirections, string? includes,
+    private async Task<(HashSet<Node> Nodes, HashSet<Edge> Edges)> BuildGraphData(string issue, JiraSearch jira, ISet<string> excludeLinks,
+        ICollection<string> showDirections, ISet<string> walkDirections, string? includes, ISet<string> issueExcludes,
+        bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse)
+    {
+        var nodes = new HashSet<Node>();
+        var edges = new HashSet<Edge>();
+
+        await TraverseIssue(issue, jira, excludeLinks, nodes, edges, showDirections, walkDirections, includes,
+            issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse, new HashSet<string>());
+
+        return (nodes, edges);
+    }
+
+    private async Task TraverseIssue(string issue, JiraSearch jira, ISet<string> excludeLinks, ISet<Node> nodes,
+        ISet<Edge> edges, ICollection<string> showDirections, ISet<string> walkDirections, string? includes,
         ISet<string> issueExcludes,
-        bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse, bool wordWrap,
+        bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse,
         ISet<string> seenIssues)
     {
-        // Process issue
-
         if (seenIssues.Contains(issue)) return;
 
         var issueInfo = await jira.GetIssue(issue);
-        if (issueInfo == null || (ignoreClosed && issueInfo.Fields.Status.IsClosed())) return;
+        if (issueInfo == null || (ignoreClosed && issueInfo.IsClosed())) return;
 
-        var summary = wordWrap ? WrapText(issueInfo.Fields.Summary, MaxSummaryLength) : issueInfo.Fields.Summary;
+        if (includes != null && !issueInfo.Key.Contains(includes)) return;
 
-        // Escape in case there's quotes in the ticket's title
-        summary = summary.Replace("\"", "\\\"");
-
-        if (includes != null && !summary.Contains(includes)) return;
-
-        if (issueExcludes.Any(exclude => summary.Contains(exclude)))
+        if (issueExcludes.Any(exclude => issueInfo.Key.Contains(exclude)))
         {
             Console.WriteLine($"Skipping {issue} - explicitly excluded.");
             return;
         }
 
         nodes.Add(
-            $"\"{issueInfo.Key}\" [label=\"{issueInfo.Key}\\n{summary}\"; href=\"{jira.GetIssueUri(issueInfo.Key)}\"; style=filled; fillcolor={issueInfo.GetColour()}];"
+            new Node(issueInfo)
         );
         seenIssues.Add(issue);
-
-        // Brauche ich das?
-        //foreach (var exclude in excludeLinks)
-        //    if (summary.Contains(exclude))
-        //        return;
 
         if (!includeEpics && issueInfo.Fields.IssueType.IsEpic()) return;
 
@@ -107,77 +101,37 @@ public class JiraGraphService
         // Process linked issues
 
         if (issueInfo.Fields.Links != null)
-            foreach (var edge in issueInfo.Fields.Links.Where(link => link.Target.Contains(includes ?? string.Empty)))
+            foreach (var link in issueInfo.Fields.Links.Where(link => link.Target.Contains(includes ?? string.Empty)))
             {
-                if (ignoreClosed && (edge.OutwardIssue ?? edge.InwardIssue)!.Fields.Status.IsClosed())
+                if (ignoreClosed && (link.OutwardIssue ?? link.InwardIssue)!.IsClosed())
                 {
-                    Console.WriteLine($"Skipping {edge.Target} - linked key is closed.");
+                    Console.WriteLine($"Skipping {link.Target} - linked key is closed.");
                     continue;
                 }
 
-                if (showDirections.Contains(edge.Direction.ToString().ToLower()) &&
-                    !excludeLinks.Contains(edge.DirectedLinkName))
-                    edges.Add($"\"{issue}\" -> \"{edge.Target}\" [label=\"{edge.DirectedLinkName}\"];");
+                if (showDirections.Contains(link.Direction.ToString().ToLower()) &&
+                    !excludeLinks.Contains(link.DirectedLinkName))
+                    edges.Add(new Edge(issueInfo, link));
 
-                if (walkDirections.Contains(edge.Direction.ToString().ToLower()) &&
-                    (traverse || issue.Split('-')[0] == edge.Target.Split('-')[0]))
-                    await TraverseIssue(edge.Target, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
-                        includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse, wordWrap,
+                if (walkDirections.Contains(link.Direction.ToString().ToLower()) &&
+                    (traverse || issue.Split('-')[0] == link.Target.Split('-')[0]))
+                    await TraverseIssue(link.Target, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
+                        includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
                         seenIssues);
             }
     }
 
-    private static string WrapText(string text, int maxLength)
-    {
-        var words = text.Split(' ');
-        var lines = new List<string>();
-        var currentLine = new StringBuilder();
-
-        foreach (var word in words)
-        {
-            if (currentLine.Length + word.Length + 1 > maxLength)
-            {
-                lines.Add(currentLine.ToString());
-                currentLine.Clear();
-            }
-
-            if (currentLine.Length > 0) currentLine.Append(" ");
-
-            currentLine.Append(word);
-        }
-
-        if (currentLine.Length > 0) lines.Add(currentLine.ToString());
-
-        return string.Join("\\n", lines);
-    }
-
-    private static List<string> CleanGraph(List<string> graph)
-    {
-        var filteredGraph = new List<string>();
-        var uniqueNodes = new HashSet<string>();
-
-        foreach (var line in graph)
-            if (line.StartsWith("\"") && line.EndsWith("\""))
-            {
-                var node = line.Trim('"');
-                if (!uniqueNodes.Contains(node))
-                {
-                    uniqueNodes.Add(node);
-                    filteredGraph.Add(line);
-                }
-            }
-            else
-            {
-                filteredGraph.Add(line);
-            }
-
-        return filteredGraph;
-    }
-
+    /// <summary>
+    /// Build a graph from the given Jira issues. Check options doc for more info.
+    /// </summary>
+    /// <param name="jira">Ready-to-use (authenticated) jira connector.</param>
+    /// <param name="input">Options for how to build the graph.</param>
+    /// <returns>Dot code, SVG code, or a base64-encoded PNG.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if you pass an unknown OutputFormat</exception>
     public async Task<string> GetGraph(JiraSearch jira, Options input)
     {
-        var graphvizSource = await GetGraphData(jira, input);
-        
+        var graphvizSource = await GetGraphvizData(jira, input);
+
         var graph = input.Local
             ? input.OutputFormat switch
             {

@@ -15,7 +15,11 @@ public class JiraSearch
     private const int LengthOfOAuthToken = 44;
 
     private HttpClient HttpClient { get; set; }
-    private string jiraUrl;
+
+    /// <summary>
+    /// URI to the connected jira instance, e.g. https://jira.example.com.
+    /// </summary>
+    public string JiraUrl { get; private init; }
 
     /// <summary>
     /// Creates a new JiraSearch instance. Tests the token if provided.
@@ -51,7 +55,7 @@ public class JiraSearch
             response.EnsureSuccessStatusCode();
         }
 
-        return new JiraSearch(httpClient) { jiraUrl = jiraInstanceUri };
+        return new JiraSearch(httpClient) { JiraUrl = jiraInstanceUri };
     }
 
     /// <summary>
@@ -80,13 +84,13 @@ public class JiraSearch
 
         httpClientHandler.CookieContainer.Add(new Uri(jiraInstanceUri), new Cookie(loginInfo.Session.Name, loginToken));
 
-        return new JiraSearch(httpClient) { jiraUrl = jiraInstanceUri };
+        return new JiraSearch(httpClient) { JiraUrl = jiraInstanceUri };
     }
 
     private JiraSearch(HttpClient httpClient)
     {
         HttpClient = httpClient;
-        jiraUrl = HttpClient.BaseAddress!.ToString();
+        JiraUrl = HttpClient.BaseAddress!.ToString();
     }
 
     /// <summary>
@@ -161,7 +165,7 @@ public class JiraSearch
     /// <returns>A complete URI for a browser to find the given issue in your jira instance.</returns>
     public string GetIssueUri(string issueId)
     {
-        return $"{jiraUrl}/browse/{issueId}";
+        return $"{JiraUrl}/browse/{issueId}";
     }
 
     public async Task<TimeSpan> GetTotalWorkTime(string username, DateTime fromDate, DateTime toDate)

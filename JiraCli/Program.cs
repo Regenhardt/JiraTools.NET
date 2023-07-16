@@ -161,7 +161,7 @@ var jira = await JiraSearch.CreateAsync(options.JiraUrl, auth);
 
 if (options.JqlQuery != null) options.Issues.AddRange(await jira.ListIds(options.JqlQuery));
 
-var graph = await new JiraGraphService().GetGraphData(jira, options);
+var graph = await new JiraGraphService().GetGraphvizData(jira, options);
 
 if (options.Local)
     Console.WriteLine(graph);
