@@ -20,10 +20,11 @@ public record Node(JiraIssue Issue) : IGraphElement
         "für update bereit" => "green",
         "für update freigegeben" => "green",
         "geschlossen" => "green",
+        "in qm-review" => "blue",
+        "in qm-test" => "blue",
+        "zu testen" => "blue",
         "in progress" => "yellow",
         "in arbeit" => "yellow",
-        "in qm-review" => "blue",
-        "zu testen" => "blue",
         "blockiert" => "red",
         _ => "white"
     };
