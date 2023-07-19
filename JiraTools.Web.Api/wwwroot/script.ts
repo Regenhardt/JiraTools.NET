@@ -59,6 +59,10 @@ class JiraGraphForm {
     get Issues(): string {
         return this.str("issues");
     }
+
+    get IncludeEpics(): boolean {
+        return this.b("includeEpics");
+    }
 }
 
 async function getGraph(dto: Options): Promise<string> {
@@ -95,12 +99,12 @@ async function getGraph(dto: Options): Promise<string> {
  */
 function getDto(form: JiraGraphForm): Options {
     var options: Options = {
-        NoAuth: undefined,
+        NoAuth: !(form.Password || form.Token),
         JiraUrl: form.JiraUrl,
         User: form.Username,
         Password: form.Password,
         Token: form.Token,
-        IncludeEpics: false,
+        IncludeEpics: form.IncludeEpics,
         ExcludeLinks: [],
         IgnoreClosed: false,
         IssueExcludes: [],
@@ -224,3 +228,4 @@ export async function loadGraphvizWasm() {
 }
 
 (window as any).loadGraphvizWasm = loadGraphvizWasm;
+loadGraphvizWasm();

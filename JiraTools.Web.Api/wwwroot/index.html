@@ -14,6 +14,15 @@
             height: auto;
             width: 100%;
         }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .form-control {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -23,28 +32,28 @@
         <h1 style="margin-right: 10px; margin-bottom: auto;">Jira Graph</h1>
         <a href="https://gitlab.com/Regenhardt/jiragraph.net" style="font-size: smaller; margin-right: 14px;">Source</a>
     </div>
-    <form style="display: flex; flex-wrap: wrap;" onsubmit="createGraph(event)">
+    <form style="display: flex; flex-wrap: wrap; flex-direction: column;" onsubmit="createGraph(event)">
         <!-- Basic -->
-        <div style="display: flex; flex-wrap: wrap;">
-            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+        <div class="form-group">
+            <div class="form-control">
                 <label for="jiraUrl">Jira instance</label>
                 <input id="jiraUrl" name="jiraUrl" type="url" placeholder="https://jira.example.com" required/>
             </div>
 
-            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+            <div class="form-control">
                 <label for="useUsername">Use Username and Password</label>
                 <input id="useUsername" name="authType" type="radio" value="username" checked/>
                 <input id="username" name="username" type="text" placeholder="username"/>
                 <input id="password" name="password" type="password" placeholder="password"/>
             </div>
 
-            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+            <div class="form-control">
                 <label for="useJSessionId">Session ID/OAuth token</label>
                 <input id="useJSessionId" name="authType" type="radio" value="jsessionid"/>
                 <input id="token" name="token" type="text" placeholder="4839893RFNWOI4829"/>
             </div>
 
-            <div style="display: flex; flex-wrap: wrap; margin-right: 10px;">
+            <div class="form-control">
                 <label for="issues">Issues</label>
                 <input id="issues" name="issues" type="text" placeholder="SIERRA-117, ECHO-228, ..." required/>
             </div>
@@ -55,9 +64,19 @@
 
 
         <!-- Advanced -->
-        <div>
-        </div>
-        <button type="button" onclick="loadGraphvizWasm()">Load Graphviz into browser</button>
+        <details>
+            <summary style="cursor: pointer;">Advanced</summary>
+            <div class="form-group">
+                <div class="form-control">
+                    <label for="includeSubtasks">Include Subtasks</label>
+                    <input id="includeSubtasks" name="includeSubtasks" type="checkbox" />
+                </div>
+                <div class="form-control">
+                    <label for="includeEpics">Include Epics</label>
+                    <input id="includeEpics" name="includeEpics" type="checkbox" />
+                </div>
+            </div>
+        </details>
     </form>
 </section>
 
