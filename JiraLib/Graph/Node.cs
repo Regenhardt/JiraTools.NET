@@ -7,6 +7,8 @@ using Jira;
 
 public record Node(JiraIssue Issue) : IGraphElement
 {
+    private const string SkyBlue = "#87CEEB";
+
     public static int MaxSummaryLength { get; set; } = 30;
 
     [Key] public string Key => Issue.Key;
@@ -20,9 +22,9 @@ public record Node(JiraIssue Issue) : IGraphElement
         "für update bereit" => "green",
         "für update freigegeben" => "green",
         "geschlossen" => "green",
-        "in qm-review" => "blue",
-        "in qm-test" => "blue",
-        "zu testen" => "blue",
+        "in qm-review" => SkyBlue,
+        "in qm-test" => SkyBlue,
+        "zu testen" => SkyBlue,
         "in progress" => "yellow",
         "in arbeit" => "yellow",
         "blockiert" => "red",
