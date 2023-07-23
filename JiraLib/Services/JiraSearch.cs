@@ -1,5 +1,6 @@
-﻿namespace JiraLib.Jira;
+﻿namespace JiraLib.Services;
 
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -7,6 +8,8 @@ using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using JiraLib;
+using JiraLib.Models;
 
 public class JiraSearch
 {
@@ -131,14 +134,14 @@ public class JiraSearch
     public async Task<List<string>> ListIds(string jqlQuery)
         => (await GetIssues(jqlQuery)).Select(issue => issue.Key).ToList();
 
-    private static readonly JsonSerializerOptions SerializerOptions = new()
+    private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
     {
         AllowTrailingCommas = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         NumberHandling = JsonNumberHandling.AllowReadingFromString
-    };
+    }.Apply(opts => opts.Converters.Add(new DateTimeConverterUsingDateTimeParseAsFallback()));
 
     /// <summary>
     /// Load an issue by its id.
@@ -204,5 +207,25 @@ public class JiraSearch
         }
 
         return totalTimeSpent;
+    }
+}
+
+internal class DateTimeConverterUsingDateTimeParseAsFallback : JsonConverter<DateTime>
+{
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        Debug.Assert(typeToConvert == typeof(DateTime));
+
+        if (!reader.TryGetDateTime(out DateTime value))
+        {
+            value = DateTime.Parse(reader.GetString()!);
+        }
+
+        return value;
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString("dd/MM/yyyy"));
     }
 }

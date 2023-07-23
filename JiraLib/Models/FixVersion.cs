@@ -1,4 +1,4 @@
-﻿namespace JiraLib.Jira;
+﻿namespace JiraLib.Models;
 
 /// <summary>
 /// A version an issue was fixed in.

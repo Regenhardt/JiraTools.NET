@@ -1,6 +1,6 @@
 ﻿namespace JiraLib.Graph;
 
-using Jira;
+using JiraLib.Models;
 
 public record Edge(JiraIssue Issue, IssueLink Link): IGraphElement
 {

@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using Jira;
+using JiraLib.Models;
 
 public record Node(JiraIssue Issue) : IGraphElement
 {

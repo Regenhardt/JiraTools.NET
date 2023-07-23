@@ -1,4 +1,6 @@
-﻿namespace JiraLib;
+﻿using JiraLib.Graph;
+
+namespace JiraLib;
 
 /// <summary>
 /// Options for creating a graph from Jira issues.
@@ -59,11 +61,13 @@ public class Options
 
     /// <summary>
     /// Whitelist for which issues to include in the graph. Null to not filter issues.
+    /// Can be a partial key like "JI-" or "123", which will include any ticket with that part in its key.
     /// </summary>
     public string? Includes { get; set; }
 
     /// <summary>
     /// Keys of issues that should not be included in the graph.
+    /// Can use partial keys like "JI-" or "123", which will exclude any ticket with that part in its key.
     /// </summary>
     public HashSet<string> IssueExcludes { get; set; } = new();
 

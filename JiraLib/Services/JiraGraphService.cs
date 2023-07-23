@@ -1,4 +1,4 @@
-﻿namespace JiraLib;
+﻿namespace JiraLib.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graph;
-using Jira;
 
 /// <summary>
 /// Service to build a graph from Jira issues.
@@ -79,8 +78,11 @@ public class JiraGraphService
         if (seenIssues.Contains(issue)) return;
 
         var issueInfo = await jira.GetIssue(issue);
-        if (issueInfo == null || (ignoreClosed && issueInfo.IsClosed())) return;
-
+        if (issueInfo == null) return;
+        seenIssues.Add(issue);
+        if (ignoreClosed && issueInfo.IsClosed()) return;
+        if (!includeEpics && issueInfo.Fields.IssueType.IsEpic()) return;
+        if (!includeSubtasks && issueInfo.Fields.IssueType.IsSubtask) return;
         if (includes != null && !issueInfo.Key.Contains(includes)) return;
 
         if (issueExcludes.Any(exclude => issueInfo.Key.Contains(exclude)))
@@ -92,11 +94,6 @@ public class JiraGraphService
         nodes.Add(
             new Node(issueInfo)
         );
-        seenIssues.Add(issue);
-
-        if (!includeEpics && issueInfo.Fields.IssueType.IsEpic()) return;
-
-        if (!includeSubtasks && issueInfo.Fields.IssueType.IsSubtask) return;
 
         // Process linked issues
         if (issueInfo.Fields.Links != null)

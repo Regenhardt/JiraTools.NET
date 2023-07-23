@@ -1,7 +1,7 @@
 ﻿namespace JiraTools.Web.Api.Controllers;
 
 using JiraLib;
-using JiraLib.Jira;
+using JiraLib.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]

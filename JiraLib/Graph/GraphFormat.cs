@@ -1,4 +1,4 @@
-﻿namespace JiraLib;
+﻿namespace JiraLib.Graph;
 
 public enum GraphFormat
 {

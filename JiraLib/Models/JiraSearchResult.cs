@@ -1,4 +1,4 @@
-﻿namespace JiraLib.Jira;
+﻿namespace JiraLib.Models;
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
