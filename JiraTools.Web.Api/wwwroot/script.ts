@@ -158,9 +158,9 @@ export async function createGraph(event: SubmitEvent): Promise<void> {
 
     try {
         if (!graphviz) {
-            createGraphOnServer(dto);
+            await createGraphOnServer(dto);
         } else {
-            createGraphInBrowser(dto);
+            await createGraphInBrowser(dto);
         }
     } catch (error: any) {
         graphElement.innerHTML = `<pre>${error}</pre>`;
