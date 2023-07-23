@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public class JiraSearch
 {
@@ -122,6 +123,11 @@ public class JiraSearch
         throw new Exception($"Failed to list issues: {response.StatusCode} {response.ReasonPhrase}");
     }
 
+    /// <summary>
+    /// Get a list of IDs of issues matching the given JQL query.
+    /// </summary>
+    /// <param name="jqlQuery"></param>
+    /// <returns></returns>
     public async Task<List<string>> ListIds(string jqlQuery)
         => (await GetIssues(jqlQuery)).Select(issue => issue.Key).ToList();
 

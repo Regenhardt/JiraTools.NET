@@ -96,10 +96,9 @@ public class JiraGraphService
 
         if (!includeEpics && issueInfo.Fields.IssueType.IsEpic()) return;
 
-        if (!includeSubtasks && issueInfo.Fields.IssueType.IsSubtask()) return;
+        if (!includeSubtasks && issueInfo.Fields.IssueType.IsSubtask) return;
 
         // Process linked issues
-
         if (issueInfo.Fields.Links != null)
             foreach (var link in issueInfo.Fields.Links.Where(link => link.Target.Contains(includes ?? string.Empty)))
             {
