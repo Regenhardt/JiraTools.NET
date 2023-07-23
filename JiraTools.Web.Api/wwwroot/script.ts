@@ -86,9 +86,7 @@ async function getGraph(dto: Options): Promise<string> {
     } else {
         const error: any = (await graphResponse.json());
         console.log("Error", error);
-        graphElement.src = '';
-        graphElement.innerHTML = `<pre>${error.detail.replace("401 ()", "401 Invalid Jira Authorization")}</pre>`;
-        return '';
+        throw `${error.detail.replace("401 ()", "401 Invalid Jira Authorization")}`;
     }
 }
 

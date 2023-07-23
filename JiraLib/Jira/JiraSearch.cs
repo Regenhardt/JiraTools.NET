@@ -145,9 +145,8 @@ public class JiraSearch
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            await Console.Error.WriteLineAsync(
+            throw new AuthenticationException(
                 "401 Unauthorized - invalid jira authentication. Please provide up-to-date user/password or JSESSIONID.");
-            Environment.Exit(1);
         }
 
         throw new Exception($"Failed to get issue '{issueId}': {response.StatusCode} {response.ReasonPhrase}");
