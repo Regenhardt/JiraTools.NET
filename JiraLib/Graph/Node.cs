@@ -36,7 +36,7 @@ public record Node(JiraIssue Issue) : IGraphElement
         var summary = input.WordWrap ? WrapText(Issue.Fields.Summary) : Issue.Fields.Summary;
         summary = EscapeQuotes(summary);
         return
-            $"\"{Key}\" [label=\"{Key}\\n{summary}\"; href=\"{Issue.Self.Scheme}://{Issue.Self.Host}/browse/{Key}\"; style=filled; fillcolor={GetColour()}];";
+            $"\"{Key}\" [label=\"{Key}\\n{summary}\"; href=\"{Issue.Self.Scheme}://{Issue.Self.Host}/browse/{Key}\"; style=filled; fillcolor=\"{GetColour()}\";];";
     }
 
     private static string WrapText(string text)
