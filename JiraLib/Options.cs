@@ -101,9 +101,9 @@ public class Options
 
     /// <summary>
     /// Whether or not to include subtasks in the graph.
-    /// Default value is true. Recommend false for bigger graphs.
+    /// Default value is false because who cares.
     /// </summary>
-    public bool IncludeSubtasks { get; set; } = true;
+    public bool IncludeSubtasks { get; set; } = false;
 
     /// <summary>
     /// Which shape the nodes of the graph should have. See https://graphviz.org/doc/info/shapes.html for options.

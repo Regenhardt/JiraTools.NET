@@ -107,8 +107,8 @@ Options ParseArgs(string[] args)
             case "--jql":
                 options.JqlQuery = args[++i];
                 break;
-            case "--ignore-subtasks":
-                options.IncludeSubtasks = false;
+            case "--include-subtasks":
+                options.IncludeSubtasks = true;
                 break;
             case "--node-shape":
                 options.NodeShape = args[++i];
