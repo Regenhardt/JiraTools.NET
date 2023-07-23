@@ -125,6 +125,15 @@ public class JiraSearch
     public async Task<List<string>> ListIds(string jqlQuery)
         => (await GetIssues(jqlQuery)).Select(issue => issue.Key).ToList();
 
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        AllowTrailingCommas = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
+    };
+
     /// <summary>
     /// Load an issue by its id.
     /// </summary>
@@ -139,7 +148,7 @@ public class JiraSearch
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            var issue = JsonSerializer.Deserialize<JiraIssue>(content);
+            var issue = JsonSerializer.Deserialize<JiraIssue>(content, SerializerOptions);
             return issue;
         }
 
