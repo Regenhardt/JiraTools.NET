@@ -22,7 +22,7 @@ using System.Text.Json.Serialization;
 /// <param name="ResolutionDate">When this issue was resolved, if at all.</param>
 /// <param name="FixVersions">Which versions this issue was fixed in, if any.</param>
 /// <param name="Links">Links this issue has to other issues. Does not include subtasks unless explicitly linked.</param>
-public record JiraFields(
+public record IssueFields(
     string Summary,
     JiraStatus Status,
     JiraIssueType IssueType,

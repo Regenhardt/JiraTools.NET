@@ -2,5 +2,5 @@
 
 internal interface IGraphElement
 {
-    string GetGraphvizCode(Options input);
+    string GetGraphvizCode(bool wordWrap);
 }

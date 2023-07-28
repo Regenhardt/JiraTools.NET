@@ -23,7 +23,7 @@ public class JiraGraphService
     public async Task<string> GetGraphvizData(JiraSearch jira, Options input)
     {
         var graphData = await GetGraphData(jira, input);
-        var graphvizSource = graphData.Select(element => element.GetGraphvizCode(input)).ToList();
+        var graphvizSource = graphData.Select(element => element.GetGraphvizCode(input.WordWrap)).ToList();
 
         var sb = new StringBuilder("digraph G {").AppendLine();
 

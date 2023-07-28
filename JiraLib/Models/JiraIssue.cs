@@ -9,7 +9,7 @@ namespace JiraLib.Models;
 /// <param name="Id">Internal ID for this ticket, e.g. "123456".</param>
 /// <param name="Self">API-Link to this ticket.</param>
 /// <param name="Fields">Fields of this ticket.</param>
-public record JiraIssue(string Key, int Id, Uri Self, JiraFields Fields)
+public record JiraIssue(string Key, int Id, Uri Self, IssueFields Fields)
 {
     /// <summary>
     /// Whether or not this issue is closed.
