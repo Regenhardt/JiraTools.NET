@@ -8,4 +8,4 @@
 /// <param name="Key">Unique key of this category, e.g. "done".</param>
 /// <param name="ColorName">Name of the color of this category, i.e. "grey", "blue" or "green".</param>
 /// <param name="Name">Name of this category, e.g. "Done" or "Fertig".</param>
-public record StatusCategory(Uri Self, int Id, string Key, string ColorName, string Name);
+public record StatusCategory(Uri Self, int Id, string Key, string ColorName, string Name) : JiraBaseEntity(Id, Self);

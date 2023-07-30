@@ -99,7 +99,7 @@ public class JiraGraphService
         if (issueInfo.Fields.Links != null)
             foreach (var link in issueInfo.Fields.Links.Where(link => link.Target.Contains(includes ?? string.Empty)))
             {
-                if (ignoreClosed && (link.OutwardIssue ?? link.InwardIssue)!.IsClosed())
+                if (ignoreClosed && (link.OutwardIssue ?? link.InwardIssue)!.MinimalFields.Status.IsClosed)
                 {
                     Console.WriteLine($"Skipping {link.Target} - linked key is closed.");
                     continue;
@@ -114,6 +114,24 @@ public class JiraGraphService
                     await TraverseIssue(link.Target, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
                         includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
                         seenIssues);
+            }
+
+        if(includeSubtasks && issueInfo.Fields.Subtasks != null)
+            foreach (var subtask in issueInfo.Fields.Subtasks)
+            {
+                if (ignoreClosed && subtask.MinimalFields.Status.IsClosed)
+                {
+                    Console.WriteLine($"Skipping {subtask.Key} - subtask is closed.");
+                    continue;
+                }
+                
+                if(showDirections.Contains("outward"))
+                    edges.Add(new Edge(issueInfo, subtask, "subtask"));
+
+                if (walkDirections.Contains("outward"))
+                    await TraverseIssue(subtask.Key, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
+                                               includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
+                                                                      seenIssues);
             }
     }
 
@@ -186,7 +204,7 @@ public class JiraGraphService
 
     private async Task<string> CompileGraphToSvgViaDot(string graphvizSource)
     {
-        var process = await SendToDot(graphvizSource, "-Tsvg");
+        using var process = await SendToDot(graphvizSource, "-Tsvg");
 
         var errorTask = process.StandardError.ReadToEndAsync();
         var outputTask = process.StandardOutput.ReadToEndAsync();
@@ -194,6 +212,10 @@ public class JiraGraphService
         var error = await errorTask;
         var output = await outputTask;
 
+        process.StandardError.Close();
+        process.StandardOutput.Close();
+
+        process.Close();
         await process.WaitForExitAsync();
 
         if (process.ExitCode != 0) throw new Exception(error);

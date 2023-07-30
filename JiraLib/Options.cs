@@ -1,6 +1,5 @@
-﻿using JiraLib.Graph;
-
-namespace JiraLib;
+﻿namespace JiraLib;
+using Graph;
 
 /// <summary>
 /// Options for creating a graph from Jira issues.
@@ -78,6 +77,7 @@ public class Options
 
     /// <summary>
     /// Directions to walk along while building the graph. Default is [inward, outward].
+    /// If subtasks are included (<seealso cref="IncludeSubtasks"/>), "outward" will be used from issue to subtask.
     /// </summary>
     public HashSet<string> WalkDirections { get; set; } = new() { "inward", "outward" };
 

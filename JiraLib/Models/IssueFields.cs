@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 /// <summary>
-/// Represents all the fields of a jira issue. For deserialization.
+/// Represents all the fields of a fully loaded jira issue. For deserialization.
 /// </summary>
 /// <param name="Summary">Summary of the jira issue as found in its title.</param>
 /// <param name="Status">Status of the jira issue, e.g. "In Progress".</param>
@@ -21,6 +21,8 @@ using System.Text.Json.Serialization;
 /// <param name="Updated">When this issue was last updated.</param>
 /// <param name="ResolutionDate">When this issue was resolved, if at all.</param>
 /// <param name="FixVersions">Which versions this issue was fixed in, if any.</param>
+/// <param name="Components">List of components of this jira issue, if any.</param>
+/// <param name="Subtasks">List of subtasks of this jira issue, if any. As part of a <seealso cref="JiraIssue"/>, subtasks are loaded in minimal format only. Load the task directly to get the full field set.</param>
 /// <param name="Links">Links this issue has to other issues. Does not include subtasks unless explicitly linked.</param>
 public record IssueFields(
     string Summary,
@@ -36,7 +38,23 @@ public record IssueFields(
     DateTime Updated,
     DateTime? ResolutionDate,
     List<FixVersion>? FixVersions,
-    [property: JsonPropertyName("issuelinks")] List<IssueLink>? Links)
+    List<JiraComponent>? Components,
+    List<MinimalIssue>? Subtasks,
+    [property: JsonPropertyName("issuelinks")]
+    List<IssueLink>? Links): MinimalIssueFields(Summary, Status, Priority, IssueType)
 {
+    /// <summary>
+    /// To deserialize subtasks from the newer rest API, we need to use a different property name (even though we don't actually use the newer rest API yet).
+    /// </summary>
+    [JsonPropertyName("sub-tasks")]
+    public List<MinimalIssue>? SubtasksAlt
+    {
+        init
+        {
+            if(value !=null) 
+                Subtasks = value;
+        }
+    }
+
     public JsonNode Worklog { get; set; } = null!;
 }

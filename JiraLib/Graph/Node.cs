@@ -3,8 +3,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using JiraLib.Models;
+using Models;
 
+/// <summary>
+/// A node in the graph.
+/// </summary>
+/// <param name="Issue">The issue this node represents.</param>
 public record Node(JiraIssue Issue) : IGraphElement
 {
     private const string SkyBlue = "#87CEEB";

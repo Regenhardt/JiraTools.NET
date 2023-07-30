@@ -4,6 +4,9 @@ using JiraLib;
 using JiraLib.Services;
 using Microsoft.AspNetCore.Mvc;
 
+/// <summary>
+/// Controller for building graphs from Jira issues.
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class JiraGraphController : ControllerBase

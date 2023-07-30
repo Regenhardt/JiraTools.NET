@@ -9,16 +9,18 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using JiraLib;
-using JiraLib.Models;
+using Models;
 
+/// <summary>
+/// Service to search for issues in a jira instance.
+/// </summary>
 public class JiraSearch
 {
     private const string IssueApiUrl = "/rest/api/latest/issue/";
     private const string SearchApiUrl = "/rest/api/latest/search?jql=";
-    private const int LengthOfJSessionId = 32;
-    private const int LengthOfOAuthToken = 44;
+    private const int LengthOfJSessionId = 32; // OAuth token is 44
 
-    private HttpClient HttpClient { get; set; }
+    private HttpClient HttpClient { get; }
 
     /// <summary>
     /// URI to the connected jira instance, e.g. https://jira.example.com.
@@ -72,7 +74,6 @@ public class JiraSearch
     public static async Task<JiraSearch> CreateAsync(string jiraInstanceUri, string username, string password)
     {
         var httpClientHandler = new HttpClientHandler();
-        httpClientHandler.CookieContainer = new CookieContainer();
 
         var httpClient = new HttpClient(httpClientHandler)
         {

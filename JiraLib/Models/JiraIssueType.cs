@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 /// <param name="IconUrl">URI to the icon of this issue type, including scheme and possibly query parameters. May or may not end in a file extension.</param>
 /// <param name="AvatarId">Internal ID of the icon of this issue type.</param>
 /// <param name="Id">Internal ID of this issue type.</param>
-public record JiraIssueType(string Name, [property: JsonPropertyName("subtask")] bool IsSubtask, Uri Self, string Description, Uri IconUrl, int AvatarId, int Id)
+public record JiraIssueType(string Name, [property: JsonPropertyName("subtask")] bool IsSubtask, Uri Self, string Description, Uri IconUrl, int AvatarId, int Id) : JiraBaseEntity(Id, Self)
 {
     /// <summary>
     /// Whether or not this issue type is a type of epic

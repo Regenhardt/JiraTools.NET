@@ -1,10 +1,9 @@
 ﻿namespace JiraLib.Models;
 
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
-public class JiraSearchResult
-{
-    [JsonPropertyName("issues")]
-    public List<JiraIssue> Issues { get; set; }
-}
+/// <summary>
+/// Represents the result of a jira search. For deserialization.
+/// </summary>
+/// <param name="Issues">List of issues found by the search.</param>
+public record JiraSearchResult(List<JiraIssue> Issues);

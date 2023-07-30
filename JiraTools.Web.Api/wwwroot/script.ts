@@ -52,12 +52,12 @@ class JiraGraphForm {
         return this.radio("authType") as 'username' | 'jsessionid';
     }
 
-    get IncludeSubtasks(): boolean {
-        return this.b("includeSubtasks");
-    }
-
     get Issues(): string {
         return this.str("issues");
+    }
+
+    get IncludeSubtasks(): boolean {
+        return this.b("includeSubtasks");
     }
 
     get IncludeEpics(): boolean {
@@ -111,7 +111,7 @@ function getDto(form: JiraGraphForm): Options {
         Traverse: true,
         WordWrap: false,
         Issues: form.Issues.split(',').map((i => i.trim())),
-        IncludeSubtasks: false,
+        IncludeSubtasks: form.IncludeSubtasks,
         NodeShape: 'box',
     };
 

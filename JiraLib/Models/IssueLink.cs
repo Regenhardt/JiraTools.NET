@@ -1,18 +1,15 @@
 ﻿namespace JiraLib.Models;
 
-using System.Text.Json.Serialization;
-
 /// <summary>
 /// Represents a link between two issues.
 /// </summary>
-public class IssueLink
+/// <param name="Id">Internal ID of the link.</param>
+/// <param name="Self">API-Link to this link.</param>
+/// <param name="Type">The type of link.</param>
+/// <param name="OutwardIssue">The issue this link connects to if it is an outward link, otherwise null. As part of an <seealso cref="IssueLink"/> object, linked issues are loaded in minimal format. Load the issue directly to get the full field set.</param>
+/// <param name="InwardIssue">The issue this link connects to if it is an inward link, otherwise null. As part of an <seealso cref="IssueLink"/> object, linked issues are loaded in minimal format. Load the issue directly to get the full field set.</param>
+public record IssueLink(int Id, Uri Self, JiraLinkType Type, MinimalIssue? OutwardIssue, MinimalIssue? InwardIssue) : JiraBaseEntity(Id, Self)
 {
-    /// <summary>
-    /// The type of link.
-    /// </summary>
-    [JsonPropertyName("type")]
-    public JiraLinkType Type { get; set; } = null!;
-
     /// <summary>
     /// The name of the link in its current context, e.g. "is blocked by" or "blocks" depending on the direction.
     /// </summary>
@@ -22,19 +19,7 @@ public class IssueLink
     /// The issue this link connects to.
     /// </summary>
     public string Target => OutwardIssue?.Key ?? InwardIssue?.Key ?? string.Empty;
-
-    /// <summary>
-    /// The issue this link connects to if it is an outward link, otherwise null.
-    /// </summary>
-    [JsonPropertyName("outwardIssue")]
-    public JiraIssue? OutwardIssue { get; set; }
-
-    /// <summary>
-    /// The issue this link connects to if it is an inward link, otherwise null.
-    /// </summary>
-    [JsonPropertyName("inwardIssue")]
-    public JiraIssue? InwardIssue { get; set; }
-
+    
     /// <summary>
     /// The direction in which the link is active (e.g. is called "blocks" vs. "is blocked by").
     /// </summary>

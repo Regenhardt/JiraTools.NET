@@ -3,13 +3,13 @@
 namespace JiraLib.Models;
 
 /// <summary>
-/// A jira issue.
+/// A jira issue with all fields loaded.
 /// </summary>
-/// <param name="Key">Public key for this ticket, e.g. "ABC-123".</param>
-/// <param name="Id">Internal ID for this ticket, e.g. "123456".</param>
-/// <param name="Self">API-Link to this ticket.</param>
-/// <param name="Fields">Fields of this ticket.</param>
-public record JiraIssue(string Key, int Id, Uri Self, IssueFields Fields)
+/// <param name="Id">Internal ID for this issue, e.g. 123456.</param>
+/// <param name="Self">API-Link to this issue.</param>
+/// <param name="Key">Public key for this issue, e.g. "ABC-123".</param>
+/// <param name="Fields">Fields of this issue.</param>
+public record JiraIssue(int Id,  Uri Self, string Key, IssueFields Fields): MinimalIssue(Id, Self, Key, Fields)
 {
     /// <summary>
     /// Whether or not this issue is closed.
