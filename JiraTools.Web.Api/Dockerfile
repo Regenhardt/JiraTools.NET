@@ -18,6 +18,7 @@ FROM build AS publish
 RUN dotnet publish "JiraTools.Web.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 ENV hostBuilder__reloadConfigOnChange=false
+ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
 
 FROM base AS final
 WORKDIR /app
