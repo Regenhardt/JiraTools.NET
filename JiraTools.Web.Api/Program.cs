@@ -28,10 +28,8 @@ builder.Services.AddCors(c => c.AddDefaultPolicy(pol =>
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()
-        .WithOrigins("https://regenhardt.gitlab.io",
-            "https://jiragraph.regenhardt.dev",
-            "https://jira-tools-6qto.onrender.com",
-            "http://localhost")));
+        .AllowAnyOrigin()
+    ));
 
 builder.Services.AddProblemDetails();
 
