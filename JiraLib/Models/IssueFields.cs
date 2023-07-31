@@ -2,7 +2,6 @@
 
 namespace JiraLib.Models;
 
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -55,6 +54,4 @@ public record IssueFields(
                 Subtasks = value;
         }
     }
-
-    public JsonNode Worklog { get; set; } = null!;
 }

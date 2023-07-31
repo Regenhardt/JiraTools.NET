@@ -185,30 +185,6 @@ public class JiraSearch
     {
         return $"{JiraUrl}/browse/{issueId}";
     }
-
-    public async Task<TimeSpan> GetTotalWorkTime(string username, DateTime fromDate, DateTime toDate)
-    {
-        var jqlQuery = $"worklogAuthor = {username} and worklogDate >= \"{fromDate:yyyy-MM-dd}\" and worklogDate <= \"{toDate:yyyy-MM-dd}\"";
-        var searchUrl = SearchApiUrl + Uri.EscapeDataString(jqlQuery);
-        var response = await HttpClient.GetAsync(searchUrl);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync();
-        var issues = JsonSerializer.Deserialize<JiraSearchResult>(content)!.Issues;
-
-        TimeSpan totalTimeSpent = TimeSpan.Zero;
-        foreach (var issue in issues)
-        {
-            var fields = issue.Fields;
-            var worklogs = fields.Worklog["worklogs"]!.AsArray();
-            foreach (var worklog in worklogs)
-            {
-                var timeSpent = TimeSpan.Parse(worklog!["timeSpentSeconds"]!.ToString());
-                totalTimeSpent += timeSpent;
-            }
-        }
-
-        return totalTimeSpent;
-    }
 }
 
 internal class DateTimeConverterUsingDateTimeParseAsFallback : JsonConverter<DateTime>
