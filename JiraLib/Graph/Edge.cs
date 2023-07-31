@@ -17,7 +17,7 @@ public record Edge : IGraphElement
     /// <param name="issue">The issue this edge starts from.</param>
     /// <param name="link">The link this edge represents.</param>
     public Edge(MinimalIssue issue, IssueLink link)
-        : this(issue, link.OutwardIssue ?? link.InwardIssue!, link.Type.Name)
+        : this(issue, link.OutwardIssue ?? link.InwardIssue!, link.DirectedLinkName)
     {
     }
 
