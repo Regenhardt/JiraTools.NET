@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using JiraLib;
 using JiraLib.Graph;
+using JiraLib.Models;
 using JiraLib.Services;
 
 const string googleChartUrl = "https://chart.apis.google.com/chart";
@@ -90,11 +91,11 @@ Options ParseArgs(string[] args)
                 break;
             case "-sd":
             case "--show-directions":
-                options.ShowDirections.Add(args[++i]);
+                options.ShowDirections.Add(Enum.Parse<LinkDirection>(args[++i], true));
                 break;
             case "-d":
             case "--direction":
-                options.WalkDirections.Add(args[++i]);
+                options.WalkDirections.Add(Enum.Parse<LinkDirection>(args[++i], true));
                 break;
             case "-T":
             case "--dont-traverse":

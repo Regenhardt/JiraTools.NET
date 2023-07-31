@@ -1,5 +1,6 @@
 ﻿namespace JiraLib;
 using Graph;
+using Models;
 
 /// <summary>
 /// Options for creating a graph from Jira issues.
@@ -71,15 +72,15 @@ public class Options
     public HashSet<string> IssueExcludes { get; set; } = new();
 
     /// <summary>
-    /// Directions to show in the graph. Default is [inward, outward].
+    /// Directions to show in the graph. Default is [Inward, Outward].
     /// </summary>
-    public HashSet<string> ShowDirections { get; set; } = new() { "inward", "outward" };
+    public HashSet<LinkDirection> ShowDirections { get; set; } = new() { LinkDirection.Inward, LinkDirection.Outward };
 
     /// <summary>
     /// Directions to walk along while building the graph. Default is [inward, outward].
-    /// If subtasks are included (<seealso cref="IncludeSubtasks"/>), "outward" will be used from issue to subtask.
+    /// If subtasks are included (<seealso cref="IncludeSubtasks"/>), "Outward" will be used from issue to subtask.
     /// </summary>
-    public HashSet<string> WalkDirections { get; set; } = new() { "inward", "outward" };
+    public ISet<LinkDirection> WalkDirections { get; set; } = new HashSet<LinkDirection> { LinkDirection.Outward, LinkDirection.Outward };
 
     /// <summary>
     /// Whether or not to traverse to other projects.

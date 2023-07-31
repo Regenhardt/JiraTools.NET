@@ -65,6 +65,6 @@ public class OptionsDto : Options
         base.ExcludeLinks = new HashSet<string>(ExcludeLinks);
 
         // Don't create any files on the server
-        base.ImageFile = string.Empty;
+        ImageFile = string.Empty;
     }
 }

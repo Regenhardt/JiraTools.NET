@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graph;
+using Models;
 
 /// <summary>
 /// Service to build a graph from Jira issues.
@@ -56,8 +57,23 @@ public class JiraGraphService
         return graph.Nodes.Concat<IGraphElement>(graph.Edges).ToList();
     }
 
-    private async Task<(HashSet<Node> Nodes, HashSet<Edge> Edges)> BuildGraphData(string issue, JiraSearch jira, ISet<string> excludeLinks,
-        ICollection<string> showDirections, ISet<string> walkDirections, string? includes, ISet<string> issueExcludes,
+    /// <summary>
+    /// Build the graph starting with the given issue.
+    /// </summary>
+    /// <param name="issue">Key of the issues to start the traversal with, e.g. "ABC-1234".</param>
+    /// <param name="jira">Already initialized instance to get ticket info from.</param>
+    /// <param name="excludeLinks">Links not to include in the graph e.g. "is blocked by".</param>
+    /// <param name="showDirections">Directions to show in the graph. Default should be [inward, outward]</param>
+    /// <param name="walkDirections"></param>
+    /// <param name="includes"></param>
+    /// <param name="issueExcludes"></param>
+    /// <param name="ignoreClosed"></param>
+    /// <param name="includeEpics"></param>
+    /// <param name="includeSubtasks"></param>
+    /// <param name="traverse"></param>
+    /// <returns></returns>
+    public async Task<(HashSet<Node> Nodes, HashSet<Edge> Edges)> BuildGraphData(string issue, JiraSearch jira, ISet<string> excludeLinks,
+        ICollection<LinkDirection> showDirections, ISet<LinkDirection> walkDirections, string? includes, ISet<string> issueExcludes,
         bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse)
     {
         var nodes = new HashSet<Node>();
@@ -70,7 +86,7 @@ public class JiraGraphService
     }
 
     private async Task TraverseIssue(string issue, JiraSearch jira, ISet<string> excludeLinks, ISet<Node> nodes,
-        ISet<Edge> edges, ICollection<string> showDirections, ISet<string> walkDirections, string? includes,
+        ISet<Edge> edges, ICollection<LinkDirection> showDirections, ISet<LinkDirection> walkDirections, string? includes,
         ISet<string> issueExcludes,
         bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse,
         ISet<string> seenIssues)
@@ -105,11 +121,11 @@ public class JiraGraphService
                     continue;
                 }
 
-                if (showDirections.Contains(link.Direction.ToString().ToLower()) &&
+                if (showDirections.Contains(link.Direction) &&
                     !excludeLinks.Contains(link.DirectedLinkName))
                     edges.Add(new Edge(issueInfo, link));
 
-                if (walkDirections.Contains(link.Direction.ToString().ToLower()) &&
+                if (walkDirections.Contains(link.Direction) &&
                     (traverse || issue.Split('-')[0] == link.Target.Split('-')[0]))
                     await TraverseIssue(link.Target, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
                         includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
@@ -125,10 +141,10 @@ public class JiraGraphService
                     continue;
                 }
                 
-                if(showDirections.Contains("outward"))
+                if(showDirections.Contains(LinkDirection.Outward))
                     edges.Add(new Edge(issueInfo, subtask, "subtask"));
 
-                if (walkDirections.Contains("outward"))
+                if (walkDirections.Contains(LinkDirection.Outward))
                     await TraverseIssue(subtask.Key, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
                                                includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
                                                                       seenIssues);
