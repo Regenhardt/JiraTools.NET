@@ -37,6 +37,7 @@ public record Node(JiraIssue Issue) : IGraphElement
         "für update bereit" => "green",
         "für update freigegeben" => "green",
         "geschlossen" => "green",
+        "abgelehnt" => "green",
         "in qm-review" => SkyBlue,
         "in qm-test" => SkyBlue,
         "zu testen" => SkyBlue,
