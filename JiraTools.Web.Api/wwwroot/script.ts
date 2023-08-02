@@ -67,6 +67,10 @@ class JiraGraphForm {
     get IgnoreClosed(): boolean {
         return this.b("ignoreClosed");
     }
+
+    get ExcludeLinks(): string {
+        return this.str("excludeLinks") || "";
+    }
 }
 
 async function getGraph(dto: Options): Promise<string> {
@@ -107,13 +111,13 @@ function getDto(form: JiraGraphForm): Options {
         Password: form.Password,
         Token: form.Token,
         IncludeEpics: form.IncludeEpics,
-        ExcludeLinks: [],
+        ExcludeLinks: form.ExcludeLinks?.split(',').map((i => i.trim())).filter(i => i),
         IgnoreClosed: form.IgnoreClosed,
         IssueExcludes: [],
         ShowDirections: undefined,
         WalkDirections: undefined,
         Traverse: true,
-        WordWrap: false,
+        WordWrap: true,
         Issues: form.Issues.split(',').map((i => i.trim())),
         IncludeSubtasks: form.IncludeSubtasks,
         NodeShape: 'box',

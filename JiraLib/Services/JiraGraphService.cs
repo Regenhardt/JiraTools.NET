@@ -122,7 +122,7 @@ public class JiraGraphService
                 }
 
                 if (showDirections.Contains(link.Direction) &&
-                    !excludeLinks.Contains(link.DirectedLinkName))
+                    !excludeLinks.Contains(link.DirectedLinkName.ToLower()))
                     edges.Add(new Edge(issueInfo, link));
 
                 if (walkDirections.Contains(link.Direction) &&

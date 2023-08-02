@@ -62,7 +62,7 @@ public class OptionsDto : Options
 
     internal void Clean()
     {
-        base.ExcludeLinks = new HashSet<string>(ExcludeLinks);
+        base.ExcludeLinks = new HashSet<string>(ExcludeLinks.Select(linkName => linkName.ToLower()));
 
         // Don't create any files on the server
         ImageFile = string.Empty;
