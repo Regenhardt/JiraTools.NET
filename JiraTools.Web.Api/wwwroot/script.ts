@@ -63,6 +63,10 @@ class JiraGraphForm {
     get IncludeEpics(): boolean {
         return this.b("includeEpics");
     }
+
+    get IgnoreClosed(): boolean {
+        return this.b("ignoreClosed");
+    }
 }
 
 async function getGraph(dto: Options): Promise<string> {
@@ -104,7 +108,7 @@ function getDto(form: JiraGraphForm): Options {
         Token: form.Token,
         IncludeEpics: form.IncludeEpics,
         ExcludeLinks: [],
-        IgnoreClosed: false,
+        IgnoreClosed: form.IgnoreClosed,
         IssueExcludes: [],
         ShowDirections: undefined,
         WalkDirections: undefined,
