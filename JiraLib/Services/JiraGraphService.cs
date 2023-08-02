@@ -115,7 +115,7 @@ public class JiraGraphService
         if (issueInfo.Fields.Links != null)
             foreach (var link in issueInfo.Fields.Links.Where(link => link.Target.Contains(includes ?? string.Empty)))
             {
-                if (ignoreClosed && (link.OutwardIssue ?? link.InwardIssue)!.MinimalFields.Status.IsClosed)
+                if (ignoreClosed && (link.OutwardIssue ?? link.InwardIssue)!.Fields.Status.IsClosed)
                 {
                     Console.WriteLine($"Skipping {link.Target} - linked key is closed.");
                     continue;
@@ -135,7 +135,7 @@ public class JiraGraphService
         if(includeSubtasks && issueInfo.Fields.Subtasks != null)
             foreach (var subtask in issueInfo.Fields.Subtasks)
             {
-                if (ignoreClosed && subtask.MinimalFields.Status.IsClosed)
+                if (ignoreClosed && subtask.Fields.Status.IsClosed)
                 {
                     Console.WriteLine($"Skipping {subtask.Key} - subtask is closed.");
                     continue;

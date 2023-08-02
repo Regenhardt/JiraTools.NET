@@ -80,7 +80,7 @@ public class Options
     /// Directions to walk along while building the graph. Default is [inward, outward].
     /// If subtasks are included (<seealso cref="IncludeSubtasks"/>), "Outward" will be used from issue to subtask.
     /// </summary>
-    public ISet<LinkDirection> WalkDirections { get; set; } = new HashSet<LinkDirection> { LinkDirection.Outward, LinkDirection.Outward };
+    public ISet<LinkDirection> WalkDirections { get; set; } = new HashSet<LinkDirection> { LinkDirection.Inward, LinkDirection.Outward };
 
     /// <summary>
     /// Whether or not to traverse to other projects.
