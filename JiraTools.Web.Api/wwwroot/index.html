@@ -22,7 +22,7 @@
 </head>
 <body>
 <!-- Small header section-->
-<section style="background-color: aqua; display: flex; align-items: baseline; flex-wrap: wrap;">
+<section style="background-color: aqua; display: flex; align-items: baseline; flex-wrap: wrap; padding: 5px 0;">
     <div style="display: flex; flex-direction: column;">
         <h1 style="margin-right: 10px; margin-bottom: auto;">Jira Graph</h1>
         <a href="https://gitlab.com/Regenhardt/jiragraph.net" style="font-size: smaller; margin-right: 14px;">Source</a>
@@ -32,29 +32,29 @@
         <div class="form-group">
             <div class="form-control">
                 <label for="jiraUrl">Jira instance</label>
-                <input id="jiraUrl" name="jiraUrl" type="url" placeholder="https://jira.example.com" required/>
+                <input id="jiraUrl" name="jiraUrl" type="url" placeholder="https://jira.example.com" title="URI of your jira instance" required/>
             </div>
 
             <div class="form-control">
                 <label for="useUsername">Use Username and Password</label>
-                <input id="useUsername" name="authType" type="radio" value="username" checked/>
+                <input id="useUsername" name="authType" type="radio" value="username" title="Will not be saved, I promise. Still not recommended, prefer OAuth token."/>
                 <input id="username" name="username" type="text" placeholder="username"/>
-                <input id="password" name="password" type="password" placeholder="password"/>
+                <input id="password" name="password" type="password" placeholder="password" title="Password to use for authentication. Not recommended."/>
             </div>
 
             <div class="form-control">
                 <label for="useJSessionId">Session ID/OAuth token</label>
-                <input id="useJSessionId" name="authType" type="radio" value="jsessionid"/>
+                <input id="useJSessionId" name="authType" type="radio" value="jsessionid" title="SessionID can be copied from a cookie. OAuth token can be obtained in Jira>User>Access Tokens." checked/>
                 <input id="token" name="token" type="text" placeholder="4839893RFNWOI4829"/>
             </div>
 
             <div class="form-control">
                 <label for="issues">Issues</label>
-                <input id="issues" name="issues" type="text" placeholder="SIERRA-117, ECHO-228, ..." required/>
+                <input id="issues" name="issues" type="text" placeholder="SIERRA-117, ECHO-228, ..." title="Serve as starting points for the graph" required/>
             </div>
 
-            <input type="submit" id="SVG" value="SVG"/>
-            <input type="submit" id="PNG" value="PNG"/>
+            <input type="submit" id="SVG" value="SVG" title="Includes links on the issues, but doesn't care how big your screen is."/>
+            <!--<input type="submit" id="PNG" value="PNG" title="Size is ok, easier to copy the image, but doesn't include links to the issues."/>-->
         </div>
 
 
@@ -66,17 +66,17 @@
                     <label for="includeSubtasks">Include subtasks</label>
                     <input id="includeSubtasks" name="includeSubtasks" type="checkbox" />
                 </div>
-                <div class="form-control">
+                <div class="form-control" title="Just actually linked epics for now, epics that hold a ticket don't work yet.">
                     <label for="includeEpics">Include epics</label>
                     <input id="includeEpics" name="includeEpics" type="checkbox" />
                 </div>
-                <div class="form-control">
+                <div class="form-control" title="Closed issues will not be traversed at all.">
                     <label for="ignoreClosed">Ignore closed</label>
                     <input id="ignoreClosed" name="ignoreClosed" type="checkbox" />
                 </div>
-                <div class="form-control">
+                <div class="form-control" title="Links to not show in the graph. They will still be traversed.">
                     <label for="excludeLinks">Exclude links</label>
-                    <input id="excludeLinks" name="excludeLinks" type="text" placeholder="needs, is cloned by, is blocked by, ..." />
+                    <input id="excludeLinks" name="excludeLinks" type="text" placeholder="needs, is cloned by, is blocked by, ..." style="min-width: 20rem" />
                 </div>
             </div>
         </details>
