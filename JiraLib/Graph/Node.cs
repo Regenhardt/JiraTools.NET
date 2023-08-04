@@ -42,6 +42,7 @@ public record Node(JiraIssue Issue) : IGraphElement
         "in qm-review" => SkyBlue,
         "in qm-test" => SkyBlue,
         "zu testen" => SkyBlue,
+        "fachl. test" => SkyBlue,
         "in progress" => "yellow",
         "in arbeit" => "yellow",
         "blockiert" => "red",
