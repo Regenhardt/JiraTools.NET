@@ -14,6 +14,41 @@ public class JiraGraphController : ControllerBase
     private static string? GraphvizWasmModule { get; set; }
 
     /// <summary>
+    /// Get metadata about this controller.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult GetControllerMetadata()
+    {
+        var controllerDescription = "Controller for building graphs from Jira issues.";
+
+        var endpoints = new List<object>
+        {
+            new
+            {
+                Method = "POST",
+                Route = "api/JiraGraph",
+                Description = "Build a graph from the given Jira issues based on the provided options."
+            },
+            new
+            {
+                Method = "GET",
+                Route = "api/JiraGraph/wasm-module",
+                Description = "Load the hpcc graphviz wasm module."
+            }
+        };
+
+        var result = new
+        {
+            Controller = nameof(JiraGraphController),
+            Description = controllerDescription,
+            Endpoints = endpoints
+        };
+
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Build a graph from the given Jira issues. Check options doc for more info.
     /// </summary>
     /// <param name="options"><see cref="OptionsDto"/> object.</param>
