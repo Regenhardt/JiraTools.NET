@@ -5,6 +5,17 @@
     <title>JiraTools</title>
     <script type="module" src="script.js"></script>
     <style>
+        #header {
+            background-color: aqua;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            padding: 5px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
         img svg {
             height: auto;
             width: 100%;
@@ -22,7 +33,7 @@
 </head>
 <body>
 <!-- Small header section-->
-<section style="background-color: aqua; display: flex; align-items: baseline; flex-wrap: wrap; padding: 5px 0;">
+<section id="header">
     <div style="display: flex; flex-direction: column;">
         <h1 style="margin-right: 10px; margin-bottom: auto;">Jira Graph</h1>
         <a href="https://gitlab.com/Regenhardt/jiragraph.net" style="font-size: smaller; margin-right: 14px;">Source</a>

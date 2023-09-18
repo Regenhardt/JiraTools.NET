@@ -235,3 +235,23 @@ export async function loadGraphvizWasm() {
 
 (window as any).loadGraphvizWasm = loadGraphvizWasm;
 loadGraphvizWasm();
+
+/**
+ * Here be style stuff.
+ */
+window.addEventListener('load', () => {
+    adjustContentMargin();
+});
+
+window.addEventListener('resize', () => {
+    adjustContentMargin();
+});
+
+function adjustContentMargin() {
+    const header = document.getElementById('header');
+    const content = document.getElementById('graph');
+    const headerHeight = header?.offsetHeight;
+
+    if(content)
+        content.style.marginTop = `${headerHeight}px`;
+}
