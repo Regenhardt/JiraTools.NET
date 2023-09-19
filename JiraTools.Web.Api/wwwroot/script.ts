@@ -147,8 +147,17 @@ function setSvg(svgData: string): void {
 }
 
 let graphviz: any | null = null;
+
+let lockForm = false;
 export async function createGraph(event: SubmitEvent): Promise<void> {
     event.preventDefault();
+
+    if (lockForm) {
+        return;
+    }
+
+    const submitButton = event.submitter as HTMLButtonElement;
+    submitButton.disabled = lockForm = true;
 
     const form = new JiraGraphForm(event.target as HTMLFormElement);
     const dto = getDto(form);
@@ -173,6 +182,8 @@ export async function createGraph(event: SubmitEvent): Promise<void> {
     } catch (error: any) {
         graphElement.innerHTML = `<pre>${error}</pre>`;
     }
+
+    submitButton.disabled = lockForm = false;
 }
 
 async function createGraphOnServer(dto: Options) {
