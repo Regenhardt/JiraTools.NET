@@ -29,10 +29,18 @@ jiracli --cookie <Your JSESSIONID> --ignore-subtasks --ignore-epics SIERRA-117
 
 This will ignore subtasks and epics and only include linked tickets.
 
+You can also use an OAuth token as authorization:
+
+```bash
+jiracli --cookie <Your OAuth token> SIERRA-117
+```
+
+The service will check the length to determine whether to use the session ID or the oauth token protocol.
+
 ### Web API
 
-The frontend doesn't have many options yet. It's just an html page with a form to enter the basic needed data and jira issues IDs (multiple can be entered, separated by comma).  
-For now this will simply walk the graph, ignore epics and subtasks, and build everything into an SVG, which will be diplayed on the page.  
-The resulting SVG can be copied from dev tools.
+The frontend doesn't have many options yet. It's a simple html page with a form to enter the basic needed data and jira issues IDs (multiple can be entered, separated by comma).  
+By default this will simply walk the graph, ignore epics and subtasks, and build everything into an SVG, which will be diplayed on the page.  
+The resulting SVG can be copied from dev tools. I might later add another button that puts the SVG into an `<img>` tag so it can simply be copied with a context click.
 
-The backend already supports all the options available to the CLI tool, there's a swagger page at `/swagger` to test it out.
+The backend supports all the options available to the CLI tool, there's a swagger page at `/swagger` to test it out.
