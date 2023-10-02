@@ -1,4 +1,5 @@
 ﻿import { Options } from './options';
+import * as GraphService from './graphService.js';
 
 const graphElement: HTMLImageElement = document.getElementById("graph") as HTMLImageElement;
 console.log("Script loaded");
@@ -81,21 +82,7 @@ async function getGraph(dto: Options): Promise<string> {
 
     graphElement.innerHTML = '';
 
-    const graphResponse = await fetch("/api/jiragraph", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dto)
-    });
-
-    if (graphResponse.ok) {
-        return await graphResponse.text();
-    } else {
-        const error: any = (await graphResponse.json());
-        console.log("Error", error);
-        throw `${error.detail.replace("401 ()", "401 Invalid Jira Authorization")}`;
-    }
+    return await GraphService.getGraph(dto)
 }
 
 /**
@@ -146,10 +133,8 @@ function setSvg(svgData: string): void {
     graphElement.innerHTML = svgData;
 }
 
-let graphviz: any | null = null;
-
 let lockForm = false;
-export async function createGraph(event: SubmitEvent): Promise<void> {
+export async function onSubmitForm(event: SubmitEvent): Promise<void> {
     event.preventDefault();
 
     if (lockForm) {
@@ -161,7 +146,22 @@ export async function createGraph(event: SubmitEvent): Promise<void> {
 
     const form = new JiraGraphForm(event.target as HTMLFormElement);
     const dto = getDto(form);
-    switch (event.submitter!.id) {
+
+    if (event.submitter!.id === "KIOSK") {
+        goToKioskWithOptions(dto);
+    } else {
+        await createGraph(event.submitter!.id, dto, submitButton);
+    }
+}
+
+function goToKioskWithOptions(options: Options) {
+    sessionStorage.setItem('options', JSON.stringify(options));
+    window.location.href = 'kiosk.html';
+}
+
+
+async function createGraph(format: "PNG" | "SVG" | string, dto: Options, submitButton: HTMLButtonElement) {
+    switch (format) {
         case "PNG":
             dto.OutputFormat = "Png";
             break;
@@ -174,7 +174,7 @@ export async function createGraph(event: SubmitEvent): Promise<void> {
     }
 
     try {
-        if (!graphviz) {
+        if (!GraphService.graphvizLoaded()) {
             await createGraphOnServer(dto);
         } else {
             await createGraphInBrowser(dto);
@@ -204,22 +204,17 @@ async function createGraphOnServer(dto: Options) {
 }
 
 async function createGraphInBrowser(dto: Options) {
-    if (!graphviz) {
-        alert("Can't compile dot in browser, graphviz module not loaded.");
-        return;
-    }
-
     const outputFormat = dto.OutputFormat;
     dto.OutputFormat = "Dot";
     const dotCode = await getGraph(dto);
     dto.OutputFormat = outputFormat;
     switch (outputFormat) {
         case 'Png':
-            const pngData = await graphviz.dot(dotCode, "png");
+            const pngData = await GraphService.dotPng(dotCode);
             setPng(pngData);
             break;
         case 'Svg':
-            const svgData = await graphviz.dot(dotCode, "svg");
+            const svgData = await GraphService.dotSvg(dotCode);
             setSvg(svgData);
             break;
         default:
@@ -228,24 +223,7 @@ async function createGraphInBrowser(dto: Options) {
     }
 }
 
-(window as any).createGraph = createGraph;
-
-
-async function getGraphvizWasm(): Promise<any> {
-    const response = await fetch("api/jiragraph/wasm-module");
-    const script = await response.text();
-    eval(script);
-    const wasmModule: any = (window as { [key: string]: any })["@hpcc-js/wasm"] as any;
-    return await wasmModule.Graphviz.load();
-}
-
-export async function loadGraphvizWasm() {
-    graphviz = await getGraphvizWasm();
-    console.log("Graphviz wasm module loaded", graphviz.version());
-}
-
-(window as any).loadGraphvizWasm = loadGraphvizWasm;
-loadGraphvizWasm();
+(window as any).createGraph = onSubmitForm;
 
 /**
  * Here be style stuff.

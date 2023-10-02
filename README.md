@@ -39,8 +39,10 @@ The service will check the length to determine whether to use the session ID or 
 
 ### Web API
 
-The frontend doesn't have many options yet. It's a simple html page with a form to enter the basic needed data and jira issues IDs (multiple can be entered, separated by comma).  
+The frontend doesn't have all options yet. It's a simple html page with a form to enter options and jira issue IDs (multiple can be entered, separated by comma).  
 By default this will simply walk the graph, ignore epics and subtasks, and build everything into an SVG, which will be diplayed on the page.  
 The resulting SVG can be copied from dev tools. I might later add another button that puts the SVG into an `<img>` tag so it can simply be copied with a context click.
 
-The backend supports all the options available to the CLI tool, there's a swagger page at `/swagger` to test it out.
+Kiosk mode can be started via the Kiosk mode button. This will hide the form and periodically reload the page with the same options. Default period is 1 minute. Refresh the page to immediately refresh the graph.
+
+The backend supports all the options available to the CLI tool, there's a `/swagger` page to test it out.

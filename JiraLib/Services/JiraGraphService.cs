@@ -231,13 +231,16 @@ public class JiraGraphService
         process.StandardError.Close();
         process.StandardOutput.Close();
 
-        process.Close();
-        await process.WaitForExitAsync();
+        if (!process.HasExited)
+        {
+            await process.WaitForExitAsync();
+        }
 
         if (process.ExitCode != 0) throw new Exception(error);
 
         return output;
     }
+
 
     private async Task<Process> SendToDot(string graphSource, string arguments)
     {
