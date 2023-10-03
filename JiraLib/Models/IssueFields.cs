@@ -2,6 +2,7 @@
 
 namespace JiraLib.Models;
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -54,4 +55,10 @@ public record IssueFields(
                 Subtasks = value;
         }
     }
+
+    /// <summary>
+    /// Any fields not contained directly on this object.
+    /// </summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> AdditionalFields { get; init; } = null!;
 }

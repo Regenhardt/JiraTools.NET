@@ -153,7 +153,7 @@ public class JiraSearch
     public async Task<JiraIssue?> GetIssue(string issueId)
     {
         var apiUrl = IssueApiUrl + Uri.EscapeDataString(issueId);
-        var response = await SendRequest(apiUrl);
+        var response = await SendRequest(apiUrl+"?expand=names");
 
         if (response.IsSuccessStatusCode)
         {

@@ -86,7 +86,8 @@ public class JiraGraphService
     }
 
     private async Task TraverseIssue(string issue, JiraSearch jira, ISet<string> excludeLinks, ISet<Node> nodes,
-        ISet<Edge> edges, ICollection<LinkDirection> showDirections, ISet<LinkDirection> walkDirections, string? includes,
+        ISet<Edge> edges, ICollection<LinkDirection> showDirections, ISet<LinkDirection> walkDirections,
+        string? includes,
         ISet<string> issueExcludes,
         bool ignoreClosed, bool includeEpics, bool includeSubtasks, bool traverse,
         ISet<string> seenIssues)
@@ -96,9 +97,6 @@ public class JiraGraphService
         var issueInfo = await jira.GetIssue(issue);
         if (issueInfo == null) return;
         seenIssues.Add(issue);
-        if (ignoreClosed && issueInfo.IsClosed()) return;
-        if (!includeEpics && issueInfo.Fields.IssueType.IsEpic()) return;
-        if (!includeSubtasks && issueInfo.Fields.IssueType.IsSubtask) return;
         if (includes != null && !issueInfo.Key.Contains(includes)) return;
 
         if (issueExcludes.Any(exclude => issueInfo.Key.Contains(exclude)))
@@ -132,7 +130,7 @@ public class JiraGraphService
                         seenIssues);
             }
 
-        if(includeSubtasks && issueInfo.Fields.Subtasks != null)
+        if (includeSubtasks && issueInfo.Fields.Subtasks != null)
             foreach (var subtask in issueInfo.Fields.Subtasks)
             {
                 if (ignoreClosed && subtask.Fields.Status.IsClosed)
@@ -140,15 +138,20 @@ public class JiraGraphService
                     Console.WriteLine($"Skipping {subtask.Key} - subtask is closed.");
                     continue;
                 }
-                
-                if(showDirections.Contains(LinkDirection.Outward))
+
+                if (showDirections.Contains(LinkDirection.Outward))
                     edges.Add(new Edge(issueInfo, subtask, "subtask"));
 
                 if (walkDirections.Contains(LinkDirection.Outward))
                     await TraverseIssue(subtask.Key, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
-                                               includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
-                                                                      seenIssues);
+                        includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
+                        seenIssues);
             }
+
+        if(includeEpics && !string.IsNullOrWhiteSpace(issueInfo.Epic))
+            await TraverseIssue(issueInfo.Epic, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
+                               includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
+                                              seenIssues);
     }
 
     /// <summary>
