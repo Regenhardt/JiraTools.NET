@@ -1,6 +1,7 @@
 import { Options } from "./options";
 
 let graphviz: any | null = null;
+let graphvizLoading: Promise<void> | null = null;
 async function getGraphvizWasm(): Promise<any> {
     const response = await fetch("api/jiragraph/wasm-module");
     const script = await response.text();
@@ -10,11 +11,16 @@ async function getGraphvizWasm(): Promise<any> {
 }
 
 export async function loadGraphvizWasm(): Promise<void> {
-    graphviz = await getGraphvizWasm();
+    graphvizLoading = graphvizLoading || getGraphvizWasm();
+    graphviz = await graphvizLoading;
     console.log("Graphviz wasm module loaded", graphviz.version());
 }
 
-export function graphvizLoaded():boolean {
+(window as any).loadGraphvizWasm = loadGraphvizWasm;
+loadGraphvizWasm();
+
+export async function graphvizLoaded(): Promise<boolean> {
+    if (graphvizLoading) await graphvizLoading;
     return graphviz != null;
 }
 
@@ -43,6 +49,3 @@ export async function getGraph(dto: Options) {
         throw `${error.detail.replace("401 ()", "401 Invalid Jira Authorization")}`;
     }
 }
-
-(window as any).loadGraphvizWasm = loadGraphvizWasm;
-loadGraphvizWasm();

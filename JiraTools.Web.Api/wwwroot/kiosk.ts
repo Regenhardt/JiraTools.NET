@@ -40,7 +40,7 @@ async function updateGraph() {
 }
 
 async function createGraph(dto: Options): Promise<string> {
-    if (GraphService.graphvizLoaded()) {
+    if (await GraphService.graphvizLoaded()) {
         dto.OutputFormat = "Dot";
         const dotCode = await GraphService.getGraph(dto);
         return await GraphService.dotSvg(dotCode);
