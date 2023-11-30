@@ -159,7 +159,7 @@ else
     auth = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
 }
 
-var jira = await JiraSearch.CreateAsync(options.JiraUrl, auth);
+var jira = await JiraSearch.CreateFromTokenAsync(options.JiraUrl, options.User, auth);
 
 if (options.JqlQuery != null) options.Issues.AddRange(await jira.ListIds(options.JqlQuery));
 

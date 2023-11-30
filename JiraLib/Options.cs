@@ -10,7 +10,7 @@ public class Options
     /// <summary>
     /// Username to use for authentication.
     /// </summary>
-    public string? User { get; set; }
+    public string User { get; set; } = "user";
 
     /// <summary>
     /// Password to use for authentication.

@@ -58,9 +58,9 @@ public class JiraGraphController : ControllerBase
     {
         options.Clean();
         var jira = await (
-            !string.IsNullOrWhiteSpace(options.User) && !string.IsNullOrWhiteSpace(options.Password)
-                ? JiraSearch.CreateAsync(options.JiraUrl, options.User, options.Password)
-                : JiraSearch.CreateAsync(options.JiraUrl, options.Token)
+            !string.IsNullOrWhiteSpace(options.Password) && string.IsNullOrWhiteSpace(options.Token)
+                ? JiraSearch.CreateFromPasswordAsync(options.JiraUrl, options.User, options.Password)
+                : JiraSearch.CreateFromTokenAsync(options.JiraUrl, options.User, options.Token)
         );
 
         var graphService = new JiraGraphService();

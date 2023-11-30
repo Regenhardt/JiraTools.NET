@@ -53,15 +53,19 @@
                 </div>
 
                 <div class="form-control">
-                    <label for="useUsername">Use Username and Password</label>
-                    <input id="useUsername" name="authType" type="radio" value="username" title="Will not be saved, I promise. Still not recommended, prefer OAuth token." />
-                    <input id="username" name="username" type="text" placeholder="username" />
-                    <input id="password" name="password" type="password" placeholder="password" title="Password to use for authentication. Not recommended." />
+                    <label for="username">Username</label>
+                    <input id="username" name="username" type="text" placeholder="username" required title="For Jira Cloud, this will be an e-mail-address." />
                 </div>
 
                 <div class="form-control">
-                    <label for="useJSessionId">Session ID/OAuth token</label>
-                    <input id="useJSessionId" name="authType" type="radio" value="jsessionid" title="SessionID can be copied from a cookie. OAuth token can be obtained in Jira>User>Access Tokens." checked />
+                    <label for="usePassword">Use Password</label>
+                    <input id="usePassword" name="authType" type="radio" value="password" title="Will not be saved, I promise. Only works with Jira Server. Still not recommended, prefer OAuth token." />
+                    <input id="password" name="password" type="password" placeholder="password" title="Password to use for jira server authentication. Not recommended." />
+                </div>
+
+                <div class="form-control">
+                    <label for="useToken">Use token</label>
+                    <input id="useToken" name="authType" type="radio" value="token" title="SessionID can be copied from a cookie. OAuth token can be obtained in Jira>User>Access Tokens." checked />
                     <input id="token" name="token" type="text" placeholder="4839893RFNWOI4829" />
                 </div>
 

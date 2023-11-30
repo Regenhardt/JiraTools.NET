@@ -148,10 +148,12 @@ public class JiraGraphService
                         seenIssues);
             }
 
-        if(includeEpics && !string.IsNullOrWhiteSpace(issueInfo.Epic))
+        if (includeEpics && !string.IsNullOrWhiteSpace(issueInfo.Epic))
+        {
             await TraverseIssue(issueInfo.Epic, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
-                               includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
-                                              seenIssues);
+                includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
+                seenIssues);
+        }
     }
 
     /// <summary>

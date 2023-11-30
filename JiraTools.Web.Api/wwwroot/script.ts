@@ -49,8 +49,8 @@ class JiraGraphForm {
         return this.str("token");
     }
 
-    get AuthType(): 'username' | 'jsessionid' {
-        return this.radio("authType") as 'username' | 'jsessionid';
+    get AuthType(): 'password' | 'token' {
+        return this.radio("authType") as 'password' | 'token';
     }
 
     get Issues(): string {

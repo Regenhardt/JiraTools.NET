@@ -1,8 +1,8 @@
 ﻿export interface Options {
-    User?: string;
+    User: string;
     Password?: string;
     Token?: string;
-    NoAuth?: boolean;
+    NoAuth: boolean;
     JiraUrl: string;
     ImageFile?: string;
     Local?: boolean;
