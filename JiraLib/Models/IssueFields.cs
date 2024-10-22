@@ -17,6 +17,7 @@ using System.Text.Json.Serialization;
 /// <param name="Assignee">User this issue is assigned to.</param>
 /// <param name="JiraProject">Project this issue belongs to.</param>
 /// <param name="Description">Description of this issue.</param>
+/// <param name="TimeTracking">Time tracking information for this issue.</param>
 /// <param name="Created">When this issue was created.</param>
 /// <param name="Updated">When this issue was last updated.</param>
 /// <param name="ResolutionDate">When this issue was resolved, if at all.</param>
@@ -34,6 +35,7 @@ public record IssueFields(
     JiraUser Assignee,
     JiraProject JiraProject,
     string Description,
+    JiraTimeTracking TimeTracking,
     DateTime Created,
     DateTime Updated,
     DateTime? ResolutionDate,
