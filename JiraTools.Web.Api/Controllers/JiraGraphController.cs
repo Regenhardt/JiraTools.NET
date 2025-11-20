@@ -1,4 +1,4 @@
-﻿namespace JiraTools.Web.Api.Controllers;
+namespace JiraTools.Web.Api.Controllers;
 
 using JiraLib;
 using JiraLib.Services;
@@ -75,15 +75,24 @@ public class JiraGraphController : ControllerBase
     /// </summary>
     /// <returns>The module as a string.</returns>
     [HttpGet("wasm-module")]
+    [ResponseCache(Duration = 3600)] // Cache for 1 hour since the module doesn't change often
     public async Task<IActionResult> GetGraphvizScript()
     {
-        if (GraphvizWasmModule is null)
+        try
         {
-            using var http = new HttpClient();
-            GraphvizWasmModule = await http.GetStringAsync("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.umd.js");
-        }
+            if (GraphvizWasmModule is null)
+            {
+                using var http = new HttpClient();
+                http.Timeout = TimeSpan.FromSeconds(30);
+                GraphvizWasmModule = await http.GetStringAsync("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.umd.js");
+            }
 
-        return Content(GraphvizWasmModule, "application/javascript");
+            return Content(GraphvizWasmModule, "application/javascript; charset=utf-8");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "Failed to load Graphviz wasm module", details = ex.Message });
+        }
     }
 }
 
