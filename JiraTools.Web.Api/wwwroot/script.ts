@@ -177,7 +177,11 @@ async function createGraph(format: "PNG" | "SVG" | string, dto: Options, submitB
         if (!GraphService.graphvizLoaded()) {
             await createGraphOnServer(dto);
         } else {
-            await createGraphInBrowser(dto);
+            try{
+                await createGraphInBrowser(dto);
+            } catch (error) {
+                await createGraphOnServer(dto);
+            }
         }
     } catch (error: any) {
         graphElement.innerHTML = `<pre>${error}</pre>`;

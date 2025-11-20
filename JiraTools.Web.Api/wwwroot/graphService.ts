@@ -21,7 +21,7 @@ loadGraphvizWasm();
 
 export async function graphvizLoaded(): Promise<boolean> {
     if (graphvizLoading) await graphvizLoading;
-    return graphviz != null;
+    return !!graphviz;
 }
 
 export async function dotSvg(dotCode: string): Promise<string> {
