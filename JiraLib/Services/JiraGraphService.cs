@@ -129,7 +129,7 @@ public class JiraGraphService
                         includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
                         seenIssues);
             }
-
+         // Process subtasks
         if (includeSubtasks && issueInfo.Fields.Subtasks != null)
             foreach (var subtask in issueInfo.Fields.Subtasks)
             {
@@ -148,11 +148,15 @@ public class JiraGraphService
                         seenIssues);
             }
 
+        // Process epics
         if (includeEpics && !string.IsNullOrWhiteSpace(issueInfo.Epic))
         {
             await TraverseIssue(issueInfo.Epic, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
                 includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
                 seenIssues);
+
+            if (showDirections.Contains(LinkDirection.Outward))
+                edges.Add(new Edge(issueInfo, issueInfo.Epic, "epic"));
         }
     }
 

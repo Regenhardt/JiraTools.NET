@@ -1,4 +1,4 @@
-﻿namespace JiraLib.Graph;
+namespace JiraLib.Graph;
 
 using Models;
 
@@ -12,7 +12,7 @@ public record Edge : IGraphElement
     private readonly string label;
 
     /// <summary>
-    /// Creates a new edge from the given issue and link.
+    /// Creates a new edge from an issue along a link.
     /// </summary>
     /// <param name="issue">The issue this edge starts from.</param>
     /// <param name="link">The link this edge represents.</param>
@@ -31,6 +31,19 @@ public record Edge : IGraphElement
     {
         this.source = source.Key;
         this.target = target.Key;
+        this.label = label;
+    }
+
+    /// <summary>
+    /// Created a new edge from an issue to another issue with the given label.
+    /// </summary>
+    /// <param name="source">The issue this edge starts from.</param>
+    /// <param name="target">The key of the issue the edge ends at.</param>
+    /// <param name="label">The label of this edge.</param>
+    public Edge(MinimalIssue source, string target, string label)
+    {
+        this.source = source.Key;
+        this.target = target;
         this.label = label;
     }
 
