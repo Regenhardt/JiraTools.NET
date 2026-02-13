@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path=".gitlab-ci.yml" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="JiraCli/JiraCli.csproj" />
+  <Project Path="JiraLib/JiraLib.csproj" />
+  <Project Path="JiraTools.Web.Api/JiraTools.Web.Api.csproj" />
+</Solution>

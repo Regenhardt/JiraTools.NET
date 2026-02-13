@@ -1,4 +1,4 @@
-﻿namespace JiraLib.Services;
+namespace JiraLib.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -147,7 +147,7 @@ public class JiraGraphService
                         includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
                         seenIssues);
             }
-
+        
         // Process epics
         if (includeEpics && !string.IsNullOrWhiteSpace(issueInfo.Epic))
         {
@@ -158,6 +158,20 @@ public class JiraGraphService
             if (showDirections.Contains(LinkDirection.Outward))
                 edges.Add(new Edge(issueInfo, issueInfo.Epic, "epic"));
         }
+
+        // Process child issues if this is an epic
+        //if (issueInfo.Fields.IssueType.Name.Equals("Epic", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(issueInfo.EpicFieldKey))
+        //{
+        //    var childIssues = await jira.GetIssuesByEpicLink(issueInfo.Key, issueInfo.EpicFieldKey);
+
+        //    if (childIssues != null)
+        //        foreach (var childIssue in childIssues)
+        //        {
+        //            await TraverseIssue(childIssue.Key, jira, excludeLinks, nodes, edges, showDirections, walkDirections,
+        //                includes, issueExcludes, ignoreClosed, includeEpics, includeSubtasks, traverse,
+        //                seenIssues);
+        //        }
+        //}
     }
 
     /// <summary>

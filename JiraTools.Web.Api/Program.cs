@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,21 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
     .AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(
-    swagger =>
-    {
-        swagger.EnableAnnotations();
-        swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetEntryAssembly()!.GetName().Name}.xml"), true);
-        foreach (var docFile in Assembly.GetEntryAssembly()!
-                     .GetReferencedAssemblies()
-                     .Select(a => Path.Combine(AppContext.BaseDirectory, $"{a.Name}.xml"))
-                     .Where(File.Exists))
-        {
-            swagger.IncludeXmlComments(docFile);
-        }
-    });
+
+// Modern .NET 10 OpenAPI support with automatic XML documentation discovery
+builder.Services.AddOpenApi();
 
 builder.Services.AddCors(c => c.AddDefaultPolicy(pol =>
     pol
@@ -42,10 +29,7 @@ app.Use(async (context, next) =>
 });
 
 // Configure the HTTP request pipeline.
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseDeveloperExceptionPage();
+app.MapOpenApi();
 
 app.UseHttpsRedirection();
 
