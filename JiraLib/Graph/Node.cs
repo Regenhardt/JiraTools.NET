@@ -1,4 +1,4 @@
-﻿namespace JiraLib.Graph;
+namespace JiraLib.Graph;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -59,7 +59,7 @@ public record Node(JiraIssue Issue) : IGraphElement
         var summary = wordWrap ? WrapText(Issue.Fields.Summary) : Issue.Fields.Summary;
         summary = EscapeQuotes(summary);
         return
-            $"\"{Key}\" [label=\"{Key}\\n{summary}\"; href=\"{Issue.Self.Scheme}://{Issue.Self.Host}/browse/{Key}\"; style=filled; fillcolor=\"{GetColour()}\";];";
+            $"\"{Key}\" [label=\"{Key}\\n{summary}\"; href=\"{Issue.Self.Scheme}://{Issue.Self.Host}/browse/{Key}\"; target=\"_blank\"; style=filled; fillcolor=\"{GetColour()}\";];";
     }
 
     private static string WrapText(string text)
